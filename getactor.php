@@ -20,7 +20,8 @@ echo "Host information: " . mysqli_get_host_info($link) . PHP_EOL;*/
 $id = $_GET['id'];
 
 mysql_select_db('newschema');
-$result = mysql_query("SELECT * FROM `name` WHERE id='". '16005' ."'", $con);
+
+$result = mysql_query("SELECT * FROM `name` WHERE id='". $id ."'", $con);
 
 if(!$result){
     die('Could not get data: ' . mysql_error());
@@ -30,7 +31,7 @@ while($row =  mysql_fetch_array($result, MYSQL_ASSOC)) {
     echo "The name for the id is " . $row['name'];
 }
 
-mysqli_close($con);
+mysql_close($con);
 
 
 
