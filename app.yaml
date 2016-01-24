@@ -1,0 +1,16 @@
+application: imdbvis
+version: 1
+runtime: php55
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /js
+  static_dir: js
+
+- url: /getactor.php
+  script: getactor.php
+
+- url: /
+  script: main.php
+
