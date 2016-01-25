@@ -4,13 +4,28 @@
  */
 
 function sayHello(){
-    var id = document.getElementById("ID_input").value;
+
+
+    // no need to fetch here data anymore, it's already loaded when the page loaded
+    // and hopefully, the localStrorage.commonCast variable has been correctly set
+    // NOT!
+
+/*    var id = document.getElementById("ID_input").value;
     var actor_movies;
     $.get("getactor.php?id=123", function(data) {
         //alert(data);
 
         //alert(actor_movies);
 
+        console.log(data);
+        displayMainCanvas(data);
+    });*/
+
+    // just display the graph
+    //displayMainCanvas(localStorage.commonCast);
+
+    $.get("getactor.php", function(data){
+        console.log("LALLALALAALA");
         console.log(data);
         displayMainCanvas(data);
     });

@@ -6,7 +6,19 @@
  * Time: 1:20 AM
  */
 
+// http://php.net/manual/en/function.array-search.php#91365
+function recursive_array_search($needle,$haystack) {
+    foreach($haystack as $key=>$value) {
+        $current_key=$key;
+        if($needle===$value OR (is_array($value) && recursive_array_search($needle,$value) !== false)) {
+            return $current_key;
+        }
+    }
+    return false;
+}
+
 require "include/php/mysql_connection.php";
+require "include/php/data_access_layer.php";
 $con = connectToMySQL();
 
 $id = $_GET['id'];
@@ -16,11 +28,15 @@ $id = $_GET['id'];
 // $resultLinks = [ [1, 1, 2], [2, 2, 3], [3, 2, 4]]
 
 
-$result = getTop250Movies($con);
-
-
+$movies = getTop250Movies($con);
+$commonCast = getCommonCast($con);
 $trimmedResult = array();
-foreach($result as $movie)
+
+// generate the d3graph-friendly object, ready to be json-serialized
+
+// firstly, create all the nodes
+// TODO: nodes are the same for each request (as in top 250), only the links change (this is little overhead anyway)
+foreach($movies as $movie)
 {
     $trimmedResult['nodes'][] = array(
         'id' => $movie['title'],
@@ -31,58 +47,28 @@ foreach($result as $movie)
     );
 }
 
-$i = 0;
-foreach($trimmedResult['nodes'] as $node)
-{
-    if ($i != 0) {
+// secondly, add a link for each <movie1, movie2> pair
+// this may be a bit tricky, because the links are defined as
+// pair of indeces of the previously defined nodes
+// TODO: replace super-slow and unnecessary recursive array search with something more intelligent for finding the index of a movie
+foreach ($commonCast as $movie1 => $value) {
+    // $value is an array of movie2 => list_of_actors
+
+    $movie1_index = recursive_array_search($movie1, $movies);
+    foreach($value as $movie2 => $actors) {
+
+        $movie2_index = recursive_array_search($movie2, $movies);
         $trimmedResult['links'][] = array(
-            'source' => $i,
-            'target' => $i-1,
-            //'weight' => 1, //old
+            'source' => $movie1_index,
+            'target' => $movie2_index
         );
     }
-    $i++;
 }
-
-/*
-$array = array(
-  'nodes' => array(
-      array('name' => 'aaaa', 'group' => 1),
-      array('name' => 'aaaa', 'group' => 1),
-      array('name' => 'aaaa', 'group' => 1),
-  ),
-    'links' => array(
-        array('source'=> 2, 'target'=> 1, 'weight'=>1),
-        array('source'=> 2, 'target'=> 0, 'weight'=>1),
-    )
-);
-*/
-
-//{
-//    "nodes":[
-//		{"name":"node1","group":1},
-//		{"name":"node2","group":2},
-//		{"name":"node3","group":2},
-//		{"name":"node4","group":3}
-//	],
-//	"links":[
-//		{"source":2,"target":1,"weight":1},
-//		{"source":0,"target":2,"weight":3}
-//	]
-//}
-
-//TODO change back in $result
 
 if(!$trimmedResult){
     die('Could not get data: ' . mysql_error());
 }
 
-$trimmedResult = json_encode($trimmedResult);
-
-
-echo $trimmedResult;
+echo json_encode($trimmedResult);
 
 mysql_close($con);
-
-
-
