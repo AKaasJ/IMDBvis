@@ -17,6 +17,19 @@ function recursive_array_search($needle,$haystack) {
     return false;
 }
 
+/**
+ * Checks whether there should be a link between movie1 and movie2, aka movie1 and movie2 are similar
+ * TODO: needs refinement - now it's more or less a placeholder, just to prove the concept, we consider similar if they at least three common actors
+
+ * @param $movie1
+ * @param $movie2
+ * @param $actors list of common actors of movie1 and movie2
+ * @return true if movie1 and movie2 are similar, false otherwise
+ */
+function checkLinkRequirements($movie1, $movie2, $actors){
+    return count($actors) >= 3;
+}
+
 require "include/php/mysql_connection.php";
 require "include/php/data_access_layer.php";
 $con = connectToMySQL();
@@ -56,6 +69,11 @@ foreach ($commonCast as $movie1 => $value) {
 
     $movie1_index = recursive_array_search($movie1, $movies);
     foreach($value as $movie2 => $actors) {
+
+        // check whether the requirements for adding a link are satisfied
+        // here, we basically filter the links based on the user preferences
+        if (!checkLinkRequirements($movie1, $movie2, $actors))
+            continue;
 
         $movie2_index = recursive_array_search($movie2, $movies);
         $trimmedResult['links'][] = array(
