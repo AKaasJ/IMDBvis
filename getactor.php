@@ -20,7 +20,7 @@ function recursive_array_search($needle,$haystack) {
 /**
  * Checks whether there should be a link between movie1 and movie2, aka movie1 and movie2 are similar
  * TODO: needs refinement - now it's more or less a placeholder, just to prove the concept, we consider similar if they at least three common actors
-
+ * CAUTION: reads the sliders global variables (received by the GET request)
  * @param $movie1
  * @param $movie2
  * @param $actors list of common actors of movie1 and movie2
@@ -34,7 +34,11 @@ require "include/php/mysql_connection.php";
 require "include/php/data_access_layer.php";
 $con = connectToMySQL();
 
-$id = $_GET['id'];
+// get slider values
+$common_cast_slider_value = $_GET['common_cast_slider_value'];
+$common_genre_slider_value = $_GET['common_genre_slider_value'];
+$common_director_slider_value = $_GET['common_director_slider_value'];
+$score_filter_slider_value = $_GET['score_filter_slider_value'];
 
 //$result = mysql_query("SELECT * FROM `name` WHERE id='". $id ."'", $con);
 // table links (link_id, movie1_id, movie2_id);
@@ -43,6 +47,11 @@ $id = $_GET['id'];
 
 $movies = getTop250Movies($con);
 $commonCast = getCommonCast($con);
+
+if(!movies or !$commonCast){
+    die('Could not get data: ' . mysql_error());
+}
+
 $trimmedResult = array();
 
 // generate the d3graph-friendly object, ready to be json-serialized
@@ -64,28 +73,36 @@ foreach($movies as $movie)
 // this may be a bit tricky, because the links are defined as
 // pair of indeces of the previously defined nodes
 // TODO: replace super-slow and unnecessary recursive array search with something more intelligent for finding the index of a movie
+
+$links = array();
 foreach ($commonCast as $movie1 => $value) {
     // $value is an array of movie2 => list_of_actors
 
     $movie1_index = recursive_array_search($movie1, $movies);
     foreach($value as $movie2 => $actors) {
 
-        // check whether the requirements for adding a link are satisfied
-        // here, we basically filter the links based on the user preferences
-        if (!checkLinkRequirements($movie1, $movie2, $actors))
-            continue;
+        // compute score for the <movie1, movie2> pair
+        $score = 0;
+        $score += count($actors) * $common_cast_slider_value;
+
 
         $movie2_index = recursive_array_search($movie2, $movies);
-        $trimmedResult['links'][] = array(
+        $links[] = array(
             'source' => $movie1_index,
-            'target' => $movie2_index
+            'target' => $movie2_index,
+            '__score' => $score // TODO: avoid including this in the response
         );
     }
 }
 
-if(!$trimmedResult){
-    die('Could not get data: ' . mysql_error());
-}
+// sort the links and retain the X % percent, as specified in the filter slide
+usort($links, function($a, $b) {
+    return $b['__score'] - $a['__score'];
+});
+
+$links = array_slice($links, 0, count($links) * $score_filter_slider_value/100, true);
+
+$trimmedResult['links'] = $links;
 
 echo json_encode($trimmedResult);
 

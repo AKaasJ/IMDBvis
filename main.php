@@ -8,6 +8,8 @@
 
     <script src="/js/zoomvisualization.js" type="text/javascript"></script>
     <script src="/js/appInit.js" type="text/javascript"></script>
+    <script src="/js/d3.slider.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="stylesheets/d3.slider.css" media="screen" />
 
     <style>
 
@@ -31,11 +33,10 @@
 
 </head>
 
-<body>
+<body onload="initializeApplication()">
 
-<div id="mysql_info_div">
+<div id="slidersCanvas"></div>
 
-</div>
 Type ID:  <input type="text" name="ID_input" id="ID_input">
 <input type="button" onclick="sayHello()" value="Say it!">
 

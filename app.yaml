@@ -8,6 +8,9 @@ handlers:
 - url: /js
   static_dir: js
 
+- url: /stylesheets
+  static_dir: stylesheets
+
 # Serve php scripts.
 - url: /(.+\.php)$
   script: \1

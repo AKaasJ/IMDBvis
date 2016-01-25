@@ -5,34 +5,42 @@
 
 function sayHello(){
 
+    // button clicked - get the data
 
-    // no need to fetch here data anymore, it's already loaded when the page loaded
-    // and hopefully, the localStrorage.commonCast variable has been correctly set
-    // NOT!
+    // get values of sliders
+    var common_cast_slider_value = common_cast_slider.value();
+    var common_genre_slider_value = common_genre_slider.value();
+    var common_director_slider_value = common_director_slider.value();
+    var score_filter_slider_value = score_filter_slider.value();
 
-/*    var id = document.getElementById("ID_input").value;
-    var actor_movies;
-    $.get("getactor.php?id=123", function(data) {
-        //alert(data);
+    // issue GET request
+    var requestString = "getactor.php?"
+        .concat("common_cast_slider_value=", common_cast_slider_value)
+        .concat("&common_genre_slider_value=", common_genre_slider_value)
+        .concat("&common_director_slider_value=", common_director_slider_value)
+        .concat("&score_filter_slider_value=", score_filter_slider_value);
 
-        //alert(actor_movies);
-
-        console.log(data);
-        displayMainCanvas(data);
-    });*/
-
-    // just display the graph
-    //displayMainCanvas(localStorage.commonCast);
-
-    $.get("getactor.php", function(data){
-        console.log("LALLALALAALA");
-        console.log(data);
+    $.get(requestString, function(data){
+        //console.log(data);
         displayMainCanvas(data);
     });
 }
 
 
-function displayMainCanvas(actor_movies){
+function displayMainCanvas(actor_movies) {
+    displayGraph(actor_movies);
+}
+
+
+/**
+ * Displays the force graph of movies
+ * @param actore_movies
+ */
+function displayGraph(actor_movies){
+
+    // delete current canvas
+    d3.select("#mainCanvas svg").remove();
+
     /*jsonFile =
     '{\
         "graph": [],\
@@ -120,9 +128,13 @@ function displayMainCanvas(actor_movies){
     var max_base_node_size = 36;
     var min_zoom = 0.1;
     var max_zoom = 7;
-    var svg = d3.select("body").append("svg");
-    var zoom = d3.behavior.zoom().scaleExtent([min_zoom,max_zoom])
+
+
+    var svg = d3.select("#mainCanvas").append("svg");
     var g = svg.append("g");
+
+    var zoom = d3.behavior.zoom().scaleExtent([min_zoom,max_zoom])
+
     svg.style("cursor","move");
 
     graph = JSON.parse(jsonFile);
