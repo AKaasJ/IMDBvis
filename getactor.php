@@ -17,6 +17,28 @@ function recursive_array_search($needle,$haystack) {
     return false;
 }
 
+
+function loadDataFromDB($con, $movies_file_name, $commonCast_file_name){
+    global $movies;
+    global $commonCast;
+
+    $movies = getTop250Movies($con);
+    $commonCast = getCommonCast($con);
+
+    if ( !file_exists('data') ) {
+        mkdir('data', 0700, true);
+    }
+    // save movies JSON
+    $fp = fopen($movies_file_name, 'w');
+    fwrite($fp, json_encode($movies));
+    fclose($fp);
+
+    // save commonCast
+    $fp = fopen($commonCast_file_name, 'w');
+    fwrite($fp, json_encode($commonCast));
+    fclose($fp);
+}
+
 /**
  * Checks whether there should be a link between movie1 and movie2, aka movie1 and movie2 are similar
  * TODO: needs refinement - now it's more or less a placeholder, just to prove the concept, we consider similar if they at least three common actors
@@ -45,10 +67,39 @@ $score_filter_slider_value = $_GET['score_filter_slider_value'];
 // $resultLinks = [ [1, 1, 2], [2, 2, 3], [3, 2, 4]]
 
 
-$movies = getTop250Movies($con);
-$commonCast = getCommonCast($con);
+// try loading movies and commmonCast from 1) sesion, 2) local data json files, 3) mysql
+$movies_file_name = 'data/movies.json';
+$commonCast_file_name = 'data/commonCast.json';
 
-if(!movies or !$commonCast){
+$movies = false;
+$commonCast = false;
+$successfullyLoaded = false;
+
+// try loading from session
+if ($_SESSION['movies'] and $_SESSION['commonCast']){
+    $movies = $_SESSION['movies'];
+    $commonCast = $_SESSION['commonCast'];
+    $successfullyLoaded = true;
+}
+else {
+    if (file_exists($movies_file_name) && file_exists($commonCast_file_name)) {
+        $movies = json_decode(file_get_contents($movies_file_name), true);
+        $commonCast = json_decode(file_get_contents($commonCast_file_name), true);
+
+        if ($movies != false && $commonCast != false) {
+            $successfullyLoaded = true;
+        }
+    }
+}
+
+if (!$successfullyLoaded){
+    // something went wrong => reload data
+    loadDataFromDB($con, $movies_file_name, $commonCast_file_name);
+    $_SESSION['movies'] = $movies;
+    $_SESSION['commonCast'] = $commonCast;
+}
+
+if(!$movies or !$commonCast){
     die('Could not get data: ' . mysql_error());
 }
 
