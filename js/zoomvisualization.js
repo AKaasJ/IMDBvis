@@ -3,6 +3,8 @@
  * Original source: http://bl.ocks.org/eyaler/10586116
  */
 
+var graphSVGOffset = 50;
+
 function sayHello(){
 
     // button clicked - get the data
@@ -88,7 +90,7 @@ function displayGraph(actor_movies){
     }';*/
     jsonFile = actor_movies;
 
-    var w = window.innerWidth;
+    var w = $('#mainCanvas').width() - graphSVGOffset;
     var h = window.innerHeight;
 
     var keyc = true, keys = true, keyt = true, keyr = true, keyx = true, keyd = true, keyl = true, keym = true, keyh = true, key1 = true, key2 = true, key3 = true, key0 = true
@@ -357,6 +359,7 @@ function displayGraph(actor_movies){
 
         function resize() {
             var width = window.innerWidth, height = window.innerHeight;
+            width = $("#mainCanvas").width() - graphSVGOffset;
             svg.attr("width", width).attr("height", height);
 
             force.size([force.size()[0]+(width-w)/zoom.scale(),force.size()[1]+(height-h)/zoom.scale()]).resume();

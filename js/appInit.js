@@ -25,7 +25,7 @@ var common_director_slider_min = 0;
 var common_director_slider_max = 20;
 
 var score_filter_slider_min = 0;
-var score_filter_slider_max = 100;
+var score_filter_slider_max = 50;
 
 function initializeApplication(){
     displaySlidersCanvas();
