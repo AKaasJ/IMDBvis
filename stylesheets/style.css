@@ -3,6 +3,12 @@ body {
     font-size: 0.9em;
 }
 
+#loading {
+    background: url("https://www.tmdn.org/tmdsview-web/resources/images/loading-gallery.gif") no-repeat center center;
+    height: 500px;
+    z-index: 10;
+}
+
 #mainCanvas {
     float: right;
     width: calc(100% - 270px);

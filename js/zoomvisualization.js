@@ -5,7 +5,31 @@
 
 var graphSVGOffset = 50;
 
+/**
+ * Displays loading gif and hides everything else (just the canvas ... )
+ * @param isLoading
+ */
+function showLoadingState(isLoading) {
+    if (isLoading){
+        // show loading gif
+        $('#loading').show();
+
+        // hide main canvas
+        $('#mainCanvas').hide();
+    }
+    else {
+        // hide loading gif
+        $('#loading').hide();
+
+        // show main canvas
+        $('#mainCanvas').show();
+    }
+
+}
+
 function sayHello(){
+
+    showLoadingState(true);
 
     // button clicked - get the data
 
@@ -24,6 +48,9 @@ function sayHello(){
 
     $.get(requestString, function(data){
         //console.log(data);
+
+        showLoadingState(false);
+
         displayMainCanvas(data);
     });
 }

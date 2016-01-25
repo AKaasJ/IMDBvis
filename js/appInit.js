@@ -28,6 +28,9 @@ var score_filter_slider_min = 0;
 var score_filter_slider_max = 50;
 
 function initializeApplication(){
+    // hide loading gif
+    $('#loading').hide();
+
     displaySlidersCanvas();
 }
 

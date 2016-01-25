@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>IMDB Vis</title>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 
@@ -41,8 +42,10 @@
     <input type="button" onclick="sayHello()" value="Update" class="submit">
 </div>
 
-<div id="mainCanvas">
-</div>
+<div id="loading"></div>
+
+<div id="mainCanvas"></div>
+
 
 </body>
 </html>
