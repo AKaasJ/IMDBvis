@@ -7,6 +7,7 @@
     <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
 
     <script src="/js/javascript.js" type="text/javascript"></script>
+    <script src="/js/appInit.js" type="text/javascript"></script>
 
     <style>
 
@@ -30,7 +31,7 @@
 
 </head>
 
-<body>
+<body onload="initializeApplication()">
 
 <div id="mysql_info_div">
 
