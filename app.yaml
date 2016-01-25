@@ -8,9 +8,11 @@ handlers:
 - url: /js
   static_dir: js
 
-- url: /getactor.php
-  script: getactor.php
+# Serve php scripts.
+- url: /(.+\.php)$
+  script: \1
 
 - url: /
   script: main.php
+
 

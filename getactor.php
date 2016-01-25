@@ -6,29 +6,83 @@
  * Time: 1:20 AM
  */
 
-
-echo 'Connecting to database ...' . PHP_EOL;
-
-$con = mysql_connect('104.155.100.124', 'root', '2IMV20');
-if (!$con){
-    die('Could not connect: ' . mysql_error($con));
-}
-
-/*echo "Success: A proper connection to MySQL was made! The my_db database is great." . PHP_EOL;
-echo "Host information: " . mysqli_get_host_info($link) . PHP_EOL;*/
+require "include/php/mysql_connection.php";
+$con = connectToMySQL();
 
 $id = $_GET['id'];
 
-mysql_select_db('newschema');
-$result = mysql_query("SELECT * FROM `name` WHERE id='". '16005' ."'", $con);
+//$result = mysql_query("SELECT * FROM `name` WHERE id='". $id ."'", $con);
+// table links (link_id, movie1_id, movie2_id);
+// $resultLinks = [ [1, 1, 2], [2, 2, 3], [3, 2, 4]]
 
-if(!$result){
+
+$result = getTop250Movies($con);
+
+
+$trimmedResult = array();
+foreach($result as $movie)
+{
+    $trimmedResult['nodes'][] = array(
+        'id' => $movie['title'],
+        //'size' => 60, //new
+        //'score' => 0, //new
+        //'type' => Circle, //new
+        //'group' => 1, //old
+    );
+}
+
+$i = 0;
+foreach($trimmedResult['nodes'] as $node)
+{
+    if ($i != 0) {
+        $trimmedResult['links'][] = array(
+            'source' => $i,
+            'target' => $i-1,
+            //'weight' => 1, //old
+        );
+    }
+    $i++;
+}
+
+/*
+$array = array(
+  'nodes' => array(
+      array('name' => 'aaaa', 'group' => 1),
+      array('name' => 'aaaa', 'group' => 1),
+      array('name' => 'aaaa', 'group' => 1),
+  ),
+    'links' => array(
+        array('source'=> 2, 'target'=> 1, 'weight'=>1),
+        array('source'=> 2, 'target'=> 0, 'weight'=>1),
+    )
+);
+*/
+
+//{
+//    "nodes":[
+//		{"name":"node1","group":1},
+//		{"name":"node2","group":2},
+//		{"name":"node3","group":2},
+//		{"name":"node4","group":3}
+//	],
+//	"links":[
+//		{"source":2,"target":1,"weight":1},
+//		{"source":0,"target":2,"weight":3}
+//	]
+//}
+
+//TODO change back in $result
+
+if(!$trimmedResult){
     die('Could not get data: ' . mysql_error());
 }
 
-while($row =  mysql_fetch_array($result, MYSQL_ASSOC)) {
-    echo "The name for the id is " . $row['name'];
-}
+$trimmedResult = json_encode($trimmedResult);
 
-mysqli_close($con);
+
+echo $trimmedResult;
+
+mysql_close($con);
+
+
 
