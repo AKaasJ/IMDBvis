@@ -157,7 +157,7 @@ function displayGraph(actor_movies){
         .range([8,24]);
 
     var force = d3.layout.force()
-        .linkDistance(60)
+        .linkDistance(150)
         .charge(-300)
         .size([w,h]);
 
