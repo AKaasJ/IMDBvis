@@ -45,7 +45,17 @@
         <div class="panel-header">IMDBVis control panel</div>
         <input type="button" onclick="sayHello()" value="Update" class="submit">
     </form>
-    <div id="linearLegendVertical" class="legend2"></div>
+
+<!--    legends-->
+    <table style="border: 0px; padding: 0px">
+        <tr>
+            <th>Legend</th>
+        </tr>
+        <tr>
+            <td><div id="productionYearLegend" class="legend2"></div></td>
+            <td><div id="lineThicknessLegend" class="legend2"></div></td>
+        </tr>
+    </table>
 </div>
 
 <div id="loading"></div>

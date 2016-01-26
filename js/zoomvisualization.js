@@ -27,8 +27,8 @@ function showLoadingState(isLoading) {
 
 }
 
-selected_slider_value = 0;
-max_selected_slider_value = 0; // max of one of the three sliders in the control panel
+var selected_slider_value = 0;
+var max_selected_slider_value = 0; // max of one of the three sliders in the control panel
 
 
 function sayHello(){
@@ -63,6 +63,10 @@ function sayHello(){
             alert("Please select a radio button");
             return;
     }
+
+    // round the numbers
+    selected_slider_value = Math.round(parseInt(selected_slider_value));
+    max_selected_slider_value = Math.round(parseInt(max_selected_slider_value));
 
     // issue GET request
     //requestString = requestString.concat("&score_filter_slider_value=", score_filter_slider_value);
@@ -156,10 +160,12 @@ function displayGraph(actor_movies){
 
     // encoding of production year 1921 -> 2015, hardcoded for now -- that makes me a saaad pandaa
     // color scale is defined in the appinit.js
-
-    var link_thickness = d3.scale.pow()
+    // link_thickness is defined in the appinit.js
+    link_thickness = d3.scale.pow()
         .domain([selected_slider_value, max_selected_slider_value])
         .range([.5, 5]);
+    updateLineThicknessLegend(link_thickness);
+
 
     var highlight_color = "blue";
     var highlight_trans = 0.1;

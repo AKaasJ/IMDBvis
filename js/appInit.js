@@ -28,6 +28,7 @@ var score_filter_slider_min = 0;
 var score_filter_slider_max = 50;
 
 var color;
+var link_thickness;
 
 function initializeApplication(){
     // hide loading gif
@@ -47,8 +48,18 @@ function displaySlidersCanvas(){
         .domain([1921, 2015])
         .range(["black", "red"]);
     // show the legend
-    colorlegend("#linearLegendVertical", color, "linear", {title: "production year", vertical: true, linearBoxes : 50, boxHeight : 10 });
+    colorlegend("#productionYearLegend", color, "linear", {title: "production year", vertical: true, linearBoxes : 50, boxHeight : 10 });
 
+
+    link_thickness = d3.scale.pow()
+        .domain([3, 40])
+        .range(["#888", "#888"]);
+    updateLineThicknessLegend(link_thickness);
+}
+
+function updateLineThicknessLegend(link_thickness){
+    d3.select("#lineThicknessLegend svg").remove();
+    colorlegend("#lineThicknessLegend", link_thickness, "custom_pow", {title: "edge thickness (# common)", vertical: true, linearBoxes : 50, boxHeight : 10 });
 }
 
 function initializeSliders() {

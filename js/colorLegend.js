@@ -14,7 +14,7 @@
 'use strict';
 
 var colorlegend = function (target, scale, type, options) {
-    var scaleTypes = ['linear', 'quantile', 'ordinal']
+    var scaleTypes = ['linear', 'quantile', 'ordinal', 'custom_pow']
         , found = false
         , opts = options || {}
         , boxWidth = opts.boxWidth || 20        // width of each box (int)
@@ -60,6 +60,13 @@ var colorlegend = function (target, scale, type, options) {
         for (i = 0; i < linearBoxes ; i++) {
             colors[i] = scale(min + i * ((max - min) / linearBoxes));
         }
+    }
+
+    else if (type == 'custom_pow'){
+        var min = domain[0];
+        var max = domain[domain.length - 1];
+        for (i = 0; i < linearBoxes ; i++)
+            colors[i] = scale(min + i * ((max - min) / linearBoxes));
     }
 
     // check the width and height and adjust if necessary to fit in the element use the range if quantile
@@ -134,10 +141,16 @@ var colorlegend = function (target, scale, type, options) {
             }
             // show only the first and last for others
             else {
-                if (i === 0)
+                if (i === 0) {
+                    //if (type=="custom_pow")
+                    //    return "thin";
                     return domain[0];
-                if (i === colors.length - 1)
+                }
+                if (i === colors.length - 1) {
+                    //if (type=="custom_pow")
+                    //    return "thick";
                     return domain[domain.length - 1];
+                }
             }
         });
 
@@ -160,11 +173,27 @@ var colorlegend = function (target, scale, type, options) {
             .attr('x', function() {
                 return w - boxWidth - padding[1] - padding[3];
             })
-            .attr('width', boxWidth)
+            //.attr('width', boxWidth)
+            .attr('width', function(d, i){
+                if (type == "custom_pow") {
+                    return i/4 + 5;
+                }
+                return boxWidth;
+            })
             .attr('height', boxHeight)
-            .style('fill', function (d, i) { return colors[i]; })
+            .style('fill', function (d, i) {
+                if (type == "custom_pow"){
+                    return "#888"; // TODO: harcoded here
+                }
+                return colors[i];
+            })
             .style('stroke-width', 1)
-            .style('stroke', function (d, i) { return colors[i]; });
+            .style('stroke', function (d, i) {
+                if (type == "custom_pow"){
+                    return "#888"; // TODO: harcoded here
+                }
+                return colors[i];
+            });
     }
 
     // show a title in center of legend (bottom)
