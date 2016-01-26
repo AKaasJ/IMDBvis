@@ -38,8 +38,10 @@
 <body onload="initializeApplication()">
 
 <div id="slidersCanvas">
-    <div class="panel-header">IMDBVis control panel</div>
-    <input type="button" onclick="sayHello()" value="Update" class="submit">
+    <form>
+        <div class="panel-header">IMDBVis control panel</div>
+        <input type="button" onclick="sayHello()" value="Update" class="submit">
+    </form>
 </div>
 
 <div id="loading"></div>

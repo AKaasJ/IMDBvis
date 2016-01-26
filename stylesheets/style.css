@@ -25,6 +25,11 @@ body {
     text-align: center;
 }
 
+#slidersCanvas .slider-radio {
+    float: left;
+    width: 10px;
+}
+
 .submit {
     margin: 10px;
 }

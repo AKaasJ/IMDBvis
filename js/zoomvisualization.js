@@ -29,23 +29,38 @@ function showLoadingState(isLoading) {
 
 function sayHello(){
 
-    showLoadingState(true);
-
     // button clicked - get the data
 
     // get values of sliders
     var common_cast_slider_value = common_cast_slider.value();
     var common_genre_slider_value = common_genre_slider.value();
     var common_director_slider_value = common_director_slider.value();
-    var score_filter_slider_value = score_filter_slider.value();
+    //var score_filter_slider_value = score_filter_slider.value();
+
+    var requestString = "getactor.php?";
+    // get values of the radio buttons
+    selected_radio=$('input[name="sliders_radio_control_panel"]:checked').val();
+    switch (selected_radio){
+        case "common_cast_slider":
+            requestString = requestString.concat("common_cast_slider_value=", common_cast_slider_value);
+            break;
+        case "common_genre_slider":
+            requestString = requestString.concat("&common_genre_slider_value=", common_genre_slider_value)
+            break;
+        case "common_director_slider":
+            requestString = requestString.concat("&common_director_slider_value=", common_director_slider_value)
+            break;
+        default:
+            alert("Please select a radio button");
+            return;
+    }
 
     // issue GET request
-    var requestString = "getactor.php?"
-        .concat("common_cast_slider_value=", common_cast_slider_value)
-        .concat("&common_genre_slider_value=", common_genre_slider_value)
-        .concat("&common_director_slider_value=", common_director_slider_value)
-        .concat("&score_filter_slider_value=", score_filter_slider_value);
+    //requestString = requestString.concat("&score_filter_slider_value=", score_filter_slider_value);
+    requestString = requestString.concat("&selected_radio=", selected_radio);
+    console.log(requestString);
 
+    showLoadingState(true);
     $.get(requestString, function(data){
         //console.log(data);
 

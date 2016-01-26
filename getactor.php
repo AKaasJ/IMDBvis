@@ -18,12 +18,15 @@ function recursive_array_search($needle,$haystack) {
 }
 
 
-function loadDataFromDB($con, $movies_file_name, $commonCast_file_name){
+function loadDataFromDB($con, $movies_file_name, $commonCast_file_name, $commonGenres_file_name, $commonDirectors_file_name){
     global $movies;
     global $commonCast;
+    global $commonGenres;
 
     $movies = getTop250Movies($con);
     $commonCast = getCommonCast($con);
+    $commonGenres = getCommonGenres($con);
+    $commonDirectors = getCommonDirectors($con);
 
     if ( !file_exists('data') ) {
         mkdir('data', 0700, true);
@@ -36,6 +39,16 @@ function loadDataFromDB($con, $movies_file_name, $commonCast_file_name){
     // save commonCast
     $fp = fopen($commonCast_file_name, 'w');
     fwrite($fp, json_encode($commonCast));
+    fclose($fp);
+
+    // save commonGenres
+    $fp = fopen($commonGenres_file_name, 'w');
+    fwrite($fp, json_encode($commonGenres));
+    fclose($fp);
+
+    // save commonDirectors
+    $fp = fopen($commonDirectors_file_name, 'w');
+    fwrite($fp, json_encode($commonDirectors));
     fclose($fp);
 }
 
@@ -57,10 +70,11 @@ require "include/php/data_access_layer.php";
 $con = connectToMySQL();
 
 // get slider values
-$common_cast_slider_value = $_GET['common_cast_slider_value'];
-$common_genre_slider_value = $_GET['common_genre_slider_value'];
-$common_director_slider_value = $_GET['common_director_slider_value'];
-$score_filter_slider_value = $_GET['score_filter_slider_value'];
+$common_cast_slider_value = round($_GET['common_cast_slider_value']);
+$common_genre_slider_value = round($_GET['common_genre_slider_value']);
+$common_director_slider_value = round($_GET['common_director_slider_value']);
+$score_filter_slider_value = round($_GET['score_filter_slider_value']);
+$selected_radio = $_GET['selected_radio'];
 
 //$result = mysql_query("SELECT * FROM `name` WHERE id='". $id ."'", $con);
 // table links (link_id, movie1_id, movie2_id);
@@ -70,36 +84,45 @@ $score_filter_slider_value = $_GET['score_filter_slider_value'];
 // try loading movies and commmonCast from 1) sesion, 2) local data json files, 3) mysql
 $movies_file_name = 'data/movies.json';
 $commonCast_file_name = 'data/commonCast.json';
+$commonGenres_file_name = 'data/commonGenres.json';
+$commonDirectors_file_name = 'data/commonDirectors.json';
 
 $movies = false;
 $commonCast = false;
+$commonGenres = false;
+$commonDirectors = false;
 $successfullyLoaded = false;
 
-// try loading from session
-if ($_SESSION['movies'] and $_SESSION['commonCast']){
-    $movies = $_SESSION['movies'];
-    $commonCast = $_SESSION['commonCast'];
-    $successfullyLoaded = true;
-}
-else {
-    if (file_exists($movies_file_name) && file_exists($commonCast_file_name)) {
+//// try loading from session
+//if ($_SESSION['movies'] and $_SESSION['commonCast'] and $_SESSION['commonGenres']){
+//    $movies = $_SESSION['movies'];
+//    $commonCast = $_SESSION['commonCast'];
+//    $commonGenres = $_SESSION['commonGenres'];
+//    $successfullyLoaded = true;
+//}
+//else {
+
+    if (file_exists($movies_file_name) && file_exists($commonCast_file_name) && file_exists($commonGenres_file_name) &&file_exists($commonDirectors_file_name)) {
         $movies = json_decode(file_get_contents($movies_file_name), true);
         $commonCast = json_decode(file_get_contents($commonCast_file_name), true);
+        $commonGenres = json_decode(file_get_contents($commonGenres_file_name), true);
+        $commonDirectors = json_decode(file_get_contents($commonDirectors_file_name), true);
 
-        if ($movies != false && $commonCast != false) {
+        if ($movies != false && $commonCast != false && $commonGenres != false && $commonDirectors != false) {
             $successfullyLoaded = true;
         }
     }
-}
+//}
 
 if (!$successfullyLoaded){
     // something went wrong => reload data
-    loadDataFromDB($con, $movies_file_name, $commonCast_file_name);
-    $_SESSION['movies'] = $movies;
-    $_SESSION['commonCast'] = $commonCast;
+    loadDataFromDB($con, $movies_file_name, $commonCast_file_name, $commonGenres_file_name,$commonDirectors_file_name);
+    //$_SESSION['movies'] = $movies;
+    //$_SESSION['commonCast'] = $commonCast;
+    //$_SESSION['commonGenres'] = $commonGenres;
 }
 
-if(!$movies or !$commonCast){
+if(!$movies or !$commonCast or !$commonGenres or !$commonDirectors){
     die('Could not get data: ' . mysql_error());
 }
 
@@ -125,34 +148,114 @@ foreach($movies as $movie)
 // pair of indeces of the previously defined nodes
 // TODO: replace super-slow and unnecessary recursive array search with something more intelligent for finding the index of a movie
 
+$scores = array(); // map <movie1_id, movie2_id, score>
+$max_score = 0;
+// subscore 1 - common cast subscore
+
+if (strcmp($selected_radio, "common_cast_slider") == 0) {
+    foreach ($commonCast as $movie1 => $value) {
+        // $value is an array of movie2 => list_of_actors
+
+        $movie1_index = recursive_array_search($movie1, $movies);
+        foreach ($value as $movie2 => $actors) {
+
+            // compute score for the <movie1, movie2> pair
+            //$sub_score = count($actors) * $common_cast_slider_value;
+            //$sub_score = count($actors) / $max_number_common_actors;
+            $sub_score = (count($actors) >= $common_cast_slider_value) ? count($actors) : 0;
+
+            if ($sub_score == 0) continue; // just for optimization
+
+            $movie2_index = recursive_array_search($movie2, $movies);
+
+            if (!isset($scores[$movie1_index][$movie2_index]))
+                $scores[$movie1_index][$movie2_index] = 0;
+
+            $scores[$movie1_index][$movie2_index] += $sub_score;
+            $max_score = max($max_score, $sub_score);
+        }
+    }
+}
+
+// subscore 2 - common genres subscore
+if (strcmp($selected_radio, "common_genre_slider") == 0) {
+    foreach ($commonGenres as $movie1 => $value) {
+        // $value is an array of movie2 => list_of_genres
+
+        $movie1_index = recursive_array_search($movie1, $movies);
+        foreach ($value as $movie2 => $genres) {
+
+            // compute score for the <movie1, movie2> pair
+            //$sub_score = count($genres) * $common_genre_slider_value;
+            //$sub_score = count($genres) / $max_number_common_genres;
+            $sub_score = (count($genres) >= $common_genre_slider_value) ? count($genres) : 0;
+
+            if ($sub_score == 0) continue;
+
+            $movie2_index = recursive_array_search($movie2, $movies);
+
+            if (!isset($scores[$movie1_index][$movie2_index]))
+                $scores[$movie1_index][$movie2_index] = 0;
+
+            $scores[$movie1_index][$movie2_index] += $sub_score;
+        }
+    }
+}
+
+
+// subscore 3 - common directors subscore
+if (strcmp($selected_radio, "common_director_slider") == 0) {
+    foreach ($commonDirectors as $movie1 => $value) {
+        // $value is an array of movie2 => list_of_genres
+
+        $movie1_index = recursive_array_search($movie1, $movies);
+        foreach ($value as $movie2 => $directors) {
+
+            // compute score for the <movie1, movie2> pair
+            //$sub_score = count($genres) * $common_genre_slider_value;
+            //$sub_score = count($genres) / $max_number_common_genres;
+            $sub_score = (count($directors) >= $common_director_slider_value) ? count($directors) : 0;
+
+            if ($sub_score == 0) continue;
+
+            $movie2_index = recursive_array_search($movie2, $movies);
+
+            if (!isset($scores[$movie1_index][$movie2_index]))
+                $scores[$movie1_index][$movie2_index] = 0;
+
+            $scores[$movie1_index][$movie2_index] += $sub_score;
+        }
+    }
+}
+
+$threshold_score = $max_score * $score_filter_slider_value / 100;
+
+//var_dump($max_score);
+//var_dump($threshold_score);
+
 $links = array();
-foreach ($commonCast as $movie1 => $value) {
-    // $value is an array of movie2 => list_of_actors
+foreach ($scores as $movie1_index => $value) {
 
-    $movie1_index = recursive_array_search($movie1, $movies);
-    foreach($value as $movie2 => $actors) {
+    foreach($value as $movie2_index => $score){
+  //      if ($score < $threshold_score) continue;
 
-        // compute score for the <movie1, movie2> pair
-        $score = 0;
-        $score += count($actors) * $common_cast_slider_value;
-
-
-        $movie2_index = recursive_array_search($movie2, $movies);
         $links[] = array(
             'source' => $movie1_index,
             'target' => $movie2_index,
-            '__score' => $score // TODO: avoid including this in the response
+            '__score' => $score
         );
     }
 }
 
-// sort the links and retain the X % percent, as specified in the filter slide
-usort($links, function($a, $b) {
-    return $b['__score'] - $a['__score'];
-});
+//// sort the links and retain the X % percent, as specified in the filter slide
+//usort($links, function($a, $b) {
+//    return $b['__score'] - $a['__score'];
+//});
+//
+//$links = array_slice($links, 0, count($links) * $score_filter_slider_value/100, true);
+////var_dump($links);
 
-$links = array_slice($links, 0, count($links) * $score_filter_slider_value/100, true);
-
+//var_dump(count($links));
 $trimmedResult['links'] = $links;
 
 echo json_encode($trimmedResult);
