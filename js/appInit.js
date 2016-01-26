@@ -64,12 +64,13 @@ function initializeSliders() {
         .attr("type", "radio")
         .attr("class", "slider-radio")
         .attr("value", "common_cast_slider")
-        .attr("name", "sliders_radio_control_panel");
+        .attr("name", "sliders_radio_control_panel")
+        .attr("checked", "true");
 
     // add div for common cast slider
     common_cast_slider_container.append("div").attr("id", "common_cast_slider");
 
-    common_cast_slider = d3.slider().min(common_cast_slider_min).max(common_cast_slider_max).ticks(2).showRange(true).value(common_cast_slider_max/2);
+    common_cast_slider = d3.slider().min(common_cast_slider_min).max(common_cast_slider_max).ticks(2).showRange(true).value(3);
     d3.select("#common_cast_slider").call(common_cast_slider);
 
 
@@ -89,7 +90,7 @@ function initializeSliders() {
 
     // add div for common genre slider
     common_genre_slider_container.append("div").attr("id", "common_genre_slider");
-    common_genre_slider = d3.slider().min(common_genre_slider_min).max(common_genre_slider_max).ticks(5).showRange(true).value(common_genre_slider_max/2);
+    common_genre_slider = d3.slider().min(common_genre_slider_min).max(common_genre_slider_max).ticks(5).showRange(true).value(3);
     d3.select("#common_genre_slider").call(common_genre_slider);
 
 
