@@ -154,9 +154,8 @@ function displayGraph(actor_movies){
     var min_score = 0;
     var max_score = 1;
 
-    var color = d3.scale.linear()
-        .domain([min_score, (min_score+max_score)/2, max_score])
-        .range(["lime", "yellow", "red"]);
+    // encoding of production year 1921 -> 2015, hardcoded for now -- that makes me a saaad pandaa
+    // color scale is defined in the appinit.js
 
     var link_thickness = d3.scale.pow()
         .domain([selected_slider_value, max_selected_slider_value])
@@ -234,7 +233,6 @@ function displayGraph(actor_movies){
             .data(graph.nodes)
             .enter().append("g")
             .attr("class", "node")
-
             .call(force.drag)
 
 
@@ -267,7 +265,7 @@ function displayGraph(actor_movies){
                 .type(function(d) { return d.type; }))
 
             .style(tocolor, function(d) {
-                if (isNumber(d.score) && d.score>=0) return color(d.score);
+                if (isNumber(d.production_year) && d.production_year>=0) return color(d.production_year);
                 else return default_node_color; })
             //.attr("r", function(d) { return size(d.size)||nominal_base_node_size; })
             .style("stroke-width", nominal_stroke)

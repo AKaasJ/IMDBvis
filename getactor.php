@@ -136,6 +136,7 @@ foreach($movies as $movie)
 {
     $trimmedResult['nodes'][] = array(
         'id' => $movie['title'],
+        'production_year' => $movie['production_year']
         //'size' => 60, //new
         //'score' => 0, //new
         //'type' => Circle, //new

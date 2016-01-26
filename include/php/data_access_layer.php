@@ -15,14 +15,7 @@
 function getTop250Movies($con){
 
     $query_string = <<<EOT
-SELECT
-    title.id, title.title
-FROM
-    newschema.movie_info_idx
-        JOIN
-    newschema.title ON movie_info_idx.movie_id = title.id
-WHERE
-    movie_info_idx.info_type_id = 112 ORDER BY title.title;
+SELECT * FROM newschema.movies_top_250_with_year;
 EOT;
 
 

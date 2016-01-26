@@ -10,8 +10,11 @@
     <script src="/js/zoomvisualization.js" type="text/javascript"></script>
     <script src="/js/appInit.js" type="text/javascript"></script>
     <script src="/js/d3.slider.js" type="text/javascript"></script>
+    <script src="/js/colorLegend.js" type="text/javascript"></script>
+
     <link rel="stylesheet" type="text/css" href="stylesheets/d3.slider.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/style.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/colorLegendStyle.css" media="screen" />
 
     <style>
 
@@ -42,6 +45,7 @@
         <div class="panel-header">IMDBVis control panel</div>
         <input type="button" onclick="sayHello()" value="Update" class="submit">
     </form>
+    <div id="linearLegendVertical" class="legend2"></div>
 </div>
 
 <div id="loading"></div>

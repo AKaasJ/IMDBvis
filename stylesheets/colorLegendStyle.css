@@ -1,0 +1,31 @@
+.legend {
+    background-color: #fff;
+    width: 300px;
+    height: 60px;
+    border: 1px solid #bbb;
+    margin: 10px;
+}
+#quantileLegend .colorlegend-labels {
+    font-size: 11px;
+    fill: black;
+}
+#linearLegend .colorlegend-labels {
+    font-size: 9px;
+    fill: #888;
+}
+#ordinalLegend .colorlegend-title {
+    font-size: 18px;
+    fill: #aaa;
+}
+.legend2,
+.legend2ordinal {
+    background-color: #fff;
+    width: 55px;
+    height: 200px;
+    border: 1px solid #bbb;
+    margin: 10px;
+    float: left;
+}
+.legend2ordinal {
+    width: 110px;
+}

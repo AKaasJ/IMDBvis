@@ -27,6 +27,8 @@ var common_director_slider_max = 2;
 var score_filter_slider_min = 0;
 var score_filter_slider_max = 50;
 
+var color;
+
 function initializeApplication(){
     // hide loading gif
     $('#loading').hide();
@@ -40,6 +42,13 @@ function initializeApplication(){
 function displaySlidersCanvas(){
 
     initializeSliders();
+
+    color = d3.scale.linear()
+        .domain([1921, 2015])
+        .range(["black", "red"]);
+    // show the legend
+    colorlegend("#linearLegendVertical", color, "linear", {title: "production year", vertical: true, linearBoxes : 50, boxHeight : 10 });
+
 }
 
 function initializeSliders() {
