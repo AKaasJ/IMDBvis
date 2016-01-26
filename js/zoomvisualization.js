@@ -27,10 +27,13 @@ function showLoadingState(isLoading) {
 
 }
 
+selected_slider_value = 0;
+max_selected_slider_value = 0; // max of one of the three sliders in the control panel
+
+
 function sayHello(){
 
     // button clicked - get the data
-
     // get values of sliders
     var common_cast_slider_value = common_cast_slider.value();
     var common_genre_slider_value = common_genre_slider.value();
@@ -43,12 +46,18 @@ function sayHello(){
     switch (selected_radio){
         case "common_cast_slider":
             requestString = requestString.concat("common_cast_slider_value=", common_cast_slider_value);
+            selected_slider_value = common_cast_slider_value;
+            max_selected_slider_value = common_cast_slider_max;
             break;
         case "common_genre_slider":
-            requestString = requestString.concat("&common_genre_slider_value=", common_genre_slider_value)
+            requestString = requestString.concat("&common_genre_slider_value=", common_genre_slider_value);
+            selected_slider_value = common_genre_slider_value;
+            max_selected_slider_value = common_genre_slider_max;
             break;
         case "common_director_slider":
-            requestString = requestString.concat("&common_director_slider_value=", common_director_slider_value)
+            requestString = requestString.concat("&common_director_slider_value=", common_director_slider_value);
+            selected_slider_value = common_director_slider_value;
+            max_selected_slider_value = common_director_slider_max;
             break;
         default:
             alert("Please select a radio button");
@@ -149,6 +158,10 @@ function displayGraph(actor_movies){
         .domain([min_score, (min_score+max_score)/2, max_score])
         .range(["lime", "yellow", "red"]);
 
+    var link_thickness = d3.scale.pow()
+        .domain([selected_slider_value, max_selected_slider_value])
+        .range([.5, 5]);
+
     var highlight_color = "blue";
     var highlight_trans = 0.1;
 
@@ -209,7 +222,9 @@ function displayGraph(actor_movies){
             .data(graph.links)
             .enter().append("line")
             .attr("class", "link")
-            .style("stroke-width",nominal_stroke)
+            .style("stroke-width", function(d){
+                return link_thickness(d.common_elements);
+            })
             .style("stroke", function(d) {
                 if (isNumber(d.score) && d.score>=0) return color(d.score);
                 else return default_link_color; })
@@ -360,7 +375,9 @@ function displayGraph(actor_movies){
 
             var stroke = nominal_stroke;
             if (nominal_stroke*zoom.scale()>max_stroke) stroke = max_stroke/zoom.scale();
-            link.style("stroke-width",stroke);
+            link.style("stroke-width", function (d){
+                return link_thickness(d.common_elements) * zoom.scale();
+            });
             circle.style("stroke-width",stroke);
 
             var base_radius = nominal_base_node_size;

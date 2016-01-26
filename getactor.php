@@ -242,7 +242,7 @@ foreach ($scores as $movie1_index => $value) {
         $links[] = array(
             'source' => $movie1_index,
             'target' => $movie2_index,
-            '__score' => $score
+            'common_elements' => $score
         );
     }
 }
