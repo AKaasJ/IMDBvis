@@ -4,7 +4,7 @@
  */
 
 var graphSVGOffset = 50;
-
+var clicked_time;
 /**
  * Displays loading gif and hides everything else (just the canvas ... )
  * @param isLoading
@@ -80,12 +80,58 @@ function sayHello(){
         showLoadingState(false);
 
         displayMainCanvas(data);
+
+        addEventsToNodes(); // for the bottom slide-menu
+
+        addTimerForNodes();
     });
+}
+
+function addTimerForNodes(){
+    var start_time;
+    function start() {
+        start_time = new Date();
+        console.log("mouse down");
+    }
+    function end() {
+        var now = new Date();
+        clicked_time = now-start_time;
+
+        console.log(clicked_time);
+    }
+
+    $('.c-button').mousedown(start);
+    $('.c-button').mouseup(end);
+
 }
 
 
 function displayMainCanvas(actor_movies) {
     displayGraph(actor_movies);
+}
+
+function addEventsToNodes() {
+
+    var slideBottom = new Menu({
+        wrapper: '#o-wrapper',
+        type: 'slide-bottom',
+        menuOpenerClass: '.c-button',
+        maskId: '#c-mask'
+    });
+
+    var slideBottomBtn = document.querySelectorAll('#c-button--slide-bottom');
+    var i;
+    console.log("length = " + (slideBottomBtn.length));
+    for (i=0; i < slideBottomBtn.length; i++) {
+
+        slideBottomBtn[i].addEventListener('click', function (e) {
+            e.preventDefault;
+
+            if (clicked_time < 300)
+                slideBottom.open();
+        });
+    }
+
 }
 
 /**
@@ -251,6 +297,8 @@ function displayGraph(actor_movies){
             .data(graph.nodes)
             .enter().append("g")
             .attr("class", "node")
+            .attr("id", "c-button--slide-bottom")
+            .attr("class", "c-button")
             .call(force.drag)
 
 

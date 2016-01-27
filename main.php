@@ -11,10 +11,12 @@
     <script src="/js/appInit.js" type="text/javascript"></script>
     <script src="/js/d3.slider.js" type="text/javascript"></script>
     <script src="/js/colorLegend.js" type="text/javascript"></script>
+    <script src="/js/menu.js" type="text/javascript"></script>
 
     <link rel="stylesheet" type="text/css" href="stylesheets/d3.slider.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/style.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/colorLegendStyle.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/bottomSliderMenuStyle.css" media="screen" />
 
     <style>
 
@@ -79,8 +81,31 @@
 
 <div id="loading"></div>
 
-<div id="mainCanvas"></div>
 
+
+
+<div id="o-wrapper" class="o-wrapper">
+
+    <div class="c-buttons">
+        <div id="mainCanvas"></div>
+<!--        <button id="c-button--slide-bottom" class="c-button">Slide Botton</button>-->
+    </div>
+
+    <!-- other content in here -->
+
+</div><!-- /o-wrapper -->
+
+<!-- menus here -->
+
+<div id="c-mask" class="c-mask"></div><!-- /c-mask -->
+
+
+<nav id="c-menu--slide-bottom" class="c-menu c-menu--slide-bottom">
+    <button class="c-menu__close">&larr; Close Menu</button>
+    <ul class="c-menu__items">
+        <li class="c-menu__item"><a href="#" class="c-menu__link">Home</a></li>
+    </ul>
+</nav>
 
 </body>
 </html>
