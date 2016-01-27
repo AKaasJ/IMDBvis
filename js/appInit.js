@@ -38,12 +38,18 @@ function initializeApplication(){
 }
 
 /**
- * Displays the sliders used to filter out links
+ * Displays:
+ * 1) the sliders used to filter out links
+ * 2) legend
  */
 function displaySlidersCanvas(){
-
     initializeSliders();
+    displayLegend();
+}
 
+function displayLegend(){
+
+    // 1. production year color legend
     color = d3.scale.linear()
         .domain([1921, 2015])
         .range(["black", "red"]);
@@ -51,10 +57,52 @@ function displaySlidersCanvas(){
     colorlegend("#productionYearLegend", color, "linear", {title: "production year", vertical: true, linearBoxes : 50, boxHeight : 10 });
 
 
+    // 2. line thickness legend
     link_thickness = d3.scale.pow()
         .domain([3, 40])
         .range(["#888", "#888"]);
     updateLineThicknessLegend(link_thickness);
+
+    //// 3. node size legend
+    //target = "nodeSizeLegend";
+    //htmlElement = document.getElementById(target);
+    //w = htmlElement.offsetWidth;          // width of container element
+    //h = htmlElement.offsetHeight;         // height of container element
+    //sizeSmallNode = 10;
+    //sizeBigNode = 20;
+    //var svg = d3.select("#".concat(target))
+    //    .append("svg")
+    //        .attr('width', w)
+    //        .attr('height', h);
+    //svg.append("circle")
+    //    .attr("r", sizeSmallNode) // set here the size!!!
+    //    .attr("cy", h/8)
+    //    .attr("cx", w/2-1);
+    //svg.append("circle")
+    //    .attr("r", sizeBigNode) // set here the size!!!
+    //    .attr("cy", h/2)
+    //    .attr("cx", w/2-2);
+    //
+    //var triangle=d3.svg.symbol().type("triangle-up").size(sizeBigNode*50);
+    //
+    //svg.append("path")
+    //    .attr("d", triangle)
+    //    .attr("transform", "translate("+(w/2-2)+","+(5*h/6)+")");
+//<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg">
+//        <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+//<g>
+//    <title>Layer 1</title>
+//    <circle id="svg_1" r="57.675461" cy="196.500009" cx="78.999998" stroke-width="5" stroke="#000000" fill="#FF0000"/>
+//        <circle id="svg_2" r="31.919709" cy="71.000002" cx="82.999999" stroke-width="5" stroke="#000000" fill="#FF0000"/>
+//        <rect id="svg_3" height="165" width="165" y="288" x="19" stroke-linecap="null" stroke-linejoin="null" stroke-width="5" stroke="#000000" fill="#FF0000"/>
+//        <text xml:space="preserve" text-anchor="middle" font-family="serif" font-size="24" id="svg_4" y="76" x="217" stroke-linecap="null" stroke-linejoin="null" stroke-width="0" stroke="#000000" fill="#000000">Rating 8.0</text>
+//    <text xml:space="preserve" text-anchor="middle" font-family="serif" font-size="24" id="svg_5" y="187" x="210" stroke-linecap="null" stroke-linejoin="null" stroke-width="0" stroke="#000000" fill="#000000">Rating 8.8</text>
+//    <text xml:space="preserve" text-anchor="middle" font-family="serif" font-size="24" id="svg_6" y="366" x="252" stroke-linecap="null" stroke-linejoin="null" stroke-width="0" stroke="#000000" fill="#000000">Rating &gt; 8.8</text>
+//        </g>
+//        </svg>
+
+
+
 }
 
 function updateLineThicknessLegend(link_thickness){
