@@ -6,52 +6,6 @@
  * Time: 1:20 AM
  */
 
-// http://php.net/manual/en/function.array-search.php#91365
-function recursive_array_search($needle,$haystack) {
-    foreach($haystack as $key=>$value) {
-        $current_key=$key;
-        if($needle===$value OR (is_array($value) && recursive_array_search($needle,$value) !== false)) {
-            return $current_key;
-        }
-    }
-    return false;
-}
-
-
-function loadDataFromDB($con, $movies_file_name, $commonCast_file_name, $commonGenres_file_name, $commonDirectors_file_name){
-    global $movies;
-    global $commonCast;
-    global $commonGenres;
-
-    $movies = getTop250Movies($con);
-    $commonCast = getCommonCast($con);
-    $commonGenres = getCommonGenres($con);
-    $commonDirectors = getCommonDirectors($con);
-
-    if ( !file_exists('data') ) {
-        mkdir('data', 0700, true);
-    }
-    // save movies JSON
-    $fp = fopen($movies_file_name, 'w');
-    fwrite($fp, json_encode($movies));
-    fclose($fp);
-
-    // save commonCast
-    $fp = fopen($commonCast_file_name, 'w');
-    fwrite($fp, json_encode($commonCast));
-    fclose($fp);
-
-    // save commonGenres
-    $fp = fopen($commonGenres_file_name, 'w');
-    fwrite($fp, json_encode($commonGenres));
-    fclose($fp);
-
-    // save commonDirectors
-    $fp = fopen($commonDirectors_file_name, 'w');
-    fwrite($fp, json_encode($commonDirectors));
-    fclose($fp);
-}
-
 /**
  * Checks whether there should be a link between movie1 and movie2, aka movie1 and movie2 are similar
  * TODO: needs refinement - now it's more or less a placeholder, just to prove the concept, we consider similar if they at least three common actors
@@ -65,9 +19,12 @@ function checkLinkRequirements($movie1, $movie2, $actors){
     return count($actors) >= 3;
 }
 
-require "include/php/mysql_connection.php";
-require "include/php/data_access_layer.php";
-$con = connectToMySQL();
+require "include/php/helper_functions.php";
+$movieData = get_data();
+$movies = $movieData['movies'];
+$commonCast = $movieData['commonCast'];
+$commonGenres = $movieData['commonGenres'];
+$commonDirectors = $movieData['commonDirectors'];
 
 // get slider values
 $common_cast_slider_value = round($_GET['common_cast_slider_value']);
@@ -76,55 +33,6 @@ $common_director_slider_value = round($_GET['common_director_slider_value']);
 $score_filter_slider_value = round($_GET['score_filter_slider_value']);
 $selected_radio = $_GET['selected_radio'];
 
-//$result = mysql_query("SELECT * FROM `name` WHERE id='". $id ."'", $con);
-// table links (link_id, movie1_id, movie2_id);
-// $resultLinks = [ [1, 1, 2], [2, 2, 3], [3, 2, 4]]
-
-
-// try loading movies and commmonCast from 1) sesion, 2) local data json files, 3) mysql
-$movies_file_name = 'data/movies.json';
-$commonCast_file_name = 'data/commonCast.json';
-$commonGenres_file_name = 'data/commonGenres.json';
-$commonDirectors_file_name = 'data/commonDirectors.json';
-
-$movies = false;
-$commonCast = false;
-$commonGenres = false;
-$commonDirectors = false;
-$successfullyLoaded = false;
-
-//// try loading from session
-//if ($_SESSION['movies'] and $_SESSION['commonCast'] and $_SESSION['commonGenres']){
-//    $movies = $_SESSION['movies'];
-//    $commonCast = $_SESSION['commonCast'];
-//    $commonGenres = $_SESSION['commonGenres'];
-//    $successfullyLoaded = true;
-//}
-//else {
-
-    if (file_exists($movies_file_name) && file_exists($commonCast_file_name) && file_exists($commonGenres_file_name) &&file_exists($commonDirectors_file_name)) {
-        $movies = json_decode(file_get_contents($movies_file_name), true);
-        $commonCast = json_decode(file_get_contents($commonCast_file_name), true);
-        $commonGenres = json_decode(file_get_contents($commonGenres_file_name), true);
-        $commonDirectors = json_decode(file_get_contents($commonDirectors_file_name), true);
-
-        if ($movies != false && $commonCast != false && $commonGenres != false && $commonDirectors != false) {
-            $successfullyLoaded = true;
-        }
-    }
-//}
-
-if (!$successfullyLoaded){
-    // something went wrong => reload data
-    loadDataFromDB($con, $movies_file_name, $commonCast_file_name, $commonGenres_file_name,$commonDirectors_file_name);
-    //$_SESSION['movies'] = $movies;
-    //$_SESSION['commonCast'] = $commonCast;
-    //$_SESSION['commonGenres'] = $commonGenres;
-}
-
-if(!$movies or !$commonCast or !$commonGenres or !$commonDirectors){
-    die('Could not get data: ' . mysql_error());
-}
 
 $trimmedResult = array();
 
@@ -263,4 +171,4 @@ $trimmedResult['links'] = $links;
 
 echo json_encode($trimmedResult);
 
-mysql_close($con);
+//mysql_close($con);

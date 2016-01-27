@@ -88,6 +88,14 @@ function displayMainCanvas(actor_movies) {
     displayGraph(actor_movies);
 }
 
+/**
+ * Shows a popup with information about the movie and its neighbours
+ * @param data
+ */
+function displayMovieInformation(data){
+    console.log(data);
+}
+
 
 /**
  * Displays the force graph of movies
@@ -307,8 +315,18 @@ function displayGraph(actor_movies){
             })
             .on("mousedown", function(d) { d3.event.stopPropagation();
                 focus_node = d;
-                set_focus(d)
-                if (highlight_node === null) set_highlight(d)
+                set_focus(d);
+                if (highlight_node === null) set_highlight(d);
+
+                // get (and display afterwards) information about the selected movie
+                $.get("/requestHandlers/getMovieInformation.php", {"movieTitle" : d.id }, function (data){
+                    displayMovieInformation(data);
+                });
+/*
+                $.ajax({
+                    url: "/requestHandlers/getMovieInformation.php",
+                    data : {"movieTitle" : d.id }
+                });*/
 
             }	).on("mouseout", function(d) {
             exit_highlight();
