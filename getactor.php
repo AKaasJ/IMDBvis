@@ -136,7 +136,9 @@ foreach($movies as $movie)
 {
     $trimmedResult['nodes'][] = array(
         'id' => $movie['title'],
-        'production_year' => $movie['production_year']
+        'production_year' => $movie['production_year'],
+        'size' => $movie['rating'],
+        'type' => (floatval($movie['rating']) > 8.8) ? "triangle-up" : "circle"
         //'size' => 60, //new
         //'score' => 0, //new
         //'type' => Circle, //new

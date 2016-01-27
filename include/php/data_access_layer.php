@@ -15,7 +15,7 @@
 function getTop250Movies($con){
 
     $query_string = <<<EOT
-SELECT * FROM newschema.movies_top_250_with_year;
+SELECT * FROM newschema.movies_top_250_with_year_and_rating;
 EOT;
 
 

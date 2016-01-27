@@ -165,21 +165,25 @@ function displayGraph(actor_movies){
         .domain([selected_slider_value, max_selected_slider_value])
         .range([.5, 5]);
     updateLineThicknessLegend(link_thickness);
+    var size = d3.scale.linear()
+        .domain([8.0, 9.3])
+        .range([10, 30]);
 
 
     var highlight_color = "blue";
     var highlight_trans = 0.1;
-
+/*
     var size = d3.scale.pow().exponent(1)
         .domain([1,100])
         .range([8,24]);
-
+*/
     var force = d3.layout.force()
         .linkDistance(150)
         .charge(-300)
         .size([w,h]);
 
-    var default_node_color = "#ccc";
+    //var default_node_color = "#ccc";
+
 //var default_node_color = "rgb(3,190,100)";
     var default_link_color = "#888";
     var nominal_base_node_size = 8;
@@ -269,12 +273,19 @@ function displayGraph(actor_movies){
             .attr("d", d3.svg.symbol()
                 .size(function(d) { return Math.PI*Math.pow(size(d.size)||nominal_base_node_size,2); })
                 .type(function(d) { return d.type; }))
+                //.type("polygon")
 
             .style(tocolor, function(d) {
                 if (isNumber(d.production_year) && d.production_year>=0) return color(d.production_year);
                 else return default_node_color; })
             //.attr("r", function(d) { return size(d.size)||nominal_base_node_size; })
             .style("stroke-width", nominal_stroke)
+            //.style("stroke-width", function(d){
+            //    return node_size_scale(d.rating);
+            //})
+            //.style("stroke", function(d) { // set the stroke to the same color
+            //    if (isNumber(d.production_year) && d.production_year>=0) return color(d.production_year);
+            //    else return default_node_color; })
             .style(towhite, "white");
 
 
@@ -382,7 +393,11 @@ function displayGraph(actor_movies){
             link.style("stroke-width", function (d){
                 return link_thickness(d.common_elements) * zoom.scale();
             });
+
             circle.style("stroke-width",stroke);
+            //circle.style("stroke-width",function(d){
+            //    return node_size_scale(d.rating);
+            //});
 
             var base_radius = nominal_base_node_size;
             if (nominal_base_node_size*zoom.scale()>max_base_node_size) base_radius = max_base_node_size/zoom.scale();
