@@ -138,7 +138,7 @@ foreach($movies as $movie)
         'id' => $movie['title'],
         'production_year' => $movie['production_year'],
         'size' => $movie['rating'],
-        'type' => (floatval($movie['rating']) > 8.8) ? "triangle-up" : "circle"
+        'type' => "circle"
         //'size' => 60, //new
         //'score' => 0, //new
         //'type' => Circle, //new
