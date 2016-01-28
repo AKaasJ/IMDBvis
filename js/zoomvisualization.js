@@ -71,7 +71,6 @@ function sayHello(){
     // issue GET request
     //requestString = requestString.concat("&score_filter_slider_value=", score_filter_slider_value);
     requestString = requestString.concat("&selected_radio=", selected_radio);
-    console.log(requestString);
 
     showLoadingState(true);
     $.get(requestString, function(data){
@@ -121,7 +120,7 @@ function addEventsToNodes() {
 
     var slideBottomBtn = document.querySelectorAll('#c-button--slide-bottom');
     var i;
-    console.log("length = " + (slideBottomBtn.length));
+
     for (i=0; i < slideBottomBtn.length; i++) {
 
         slideBottomBtn[i].addEventListener('click', function (e) {
@@ -139,7 +138,81 @@ function addEventsToNodes() {
  * @param data
  */
 function displayMovieInformation(data){
-    console.log(data);
+    data = JSON.parse(data);
+    displayParticularMovieInformation(data);
+    displayStackedBarChart(data);
+}
+
+function displayParticularMovieInformation(data){
+    // set the title
+    d3.select("#c-menu-table #movie_info #title").text(data.movie_data.title + " (" + (data.movie_data.production_year) + ")");
+
+    // set the rating
+    d3.select("#c-menu-table #movie_info #rating").text("Rating: " + (data.movie_data.rating));
+}
+
+function displayStackedBarChart(data){
+
+    // get all the movies
+    movies_categories = [];
+    commonActorsData = ['Common Actors'];
+    commonGenresData = ['Common Genres'];
+    commonDirectorsData = ['Common Directors'];
+
+    //            commonActorsData.push(data.commonCast[movie].length);
+
+    for (movie in data.commonCast){
+        if ($.inArray(movie, movies_categories) == -1) //avoid duplicates
+            movies_categories.push(movie);
+    }
+    for (movie in data.commonGenres){
+        if ($.inArray(movie, movies_categories) == -1) { //avoid duplicates
+            movies_categories.push(movie);
+        }
+    }
+    for (movie in data.commonDirectors){
+        if ($.inArray(movie, movies_categories) == -1) //avoid duplicates
+            movies_categories.push(movie);
+    }
+
+    // populate bar chart data
+    var i = 0;
+    for (i=0; i < movies_categories.length; ++i){
+        movie = movies_categories[i];
+
+        commonActorsData.push(data.commonCast == null || data.commonCast[movie] === undefined ? 0 : data.commonCast[movie].length);
+        commonGenresData.push(data.commonGenres == null || data.commonGenres[movie] === undefined ? 0 : data.commonGenres[movie].length);
+        commonDirectorsData.push(data.commonDirectors == null  || data.commonDirectors[movie] === undefined ? 0 : data.commonDirectors[movie].length);
+    }
+
+
+
+
+    var chart = c3.generate({
+        bindto: '#chart',
+        data: {
+            columns: [
+                commonActorsData,
+                commonGenresData,
+                commonDirectorsData
+            ],
+            type: 'bar',
+            groups: [
+                [commonActorsData[0], commonGenresData[0], commonDirectorsData[0]]
+            ]
+        },
+        grid: {
+            y: {
+                lines: [{value:0}]
+            }
+        },
+        axis: {
+            x: {
+                type: 'category',
+                categories: movies_categories
+            }
+        }
+    });
 }
 
 
@@ -151,52 +224,6 @@ function displayGraph(actor_movies){
 
     // delete current canvas
     d3.select("#mainCanvas svg").remove();
-
-    /*jsonFile =
-    '{\
-        "graph": [],\
-        "links": [\
-        {"source": 0, "target": 1},\
-        {"source": 0, "target": 2},\
-        {"source": 0, "target": 3},\
-        {"source": 0, "target": 4},\
-        {"source": 0, "target": 5},\
-        {"source": 0, "target": 6},\
-        {"source": 1, "target": 3},\
-        {"source": 1, "target": 4},\
-        {"source": 1, "target": 5},\
-        {"source": 1, "target": 6},\
-        {"source": 2, "target": 4},\
-        {"source": 2, "target": 5},\
-        {"source": 2, "target": 6},\
-        {"source": 3, "target": 5},\
-        {"source": 3, "target": 6},\
-        {"source": 5, "target": 6},\
-        {"source": 0, "target": 7},\
-        {"source": 1, "target": 8},\
-        {"source": 2, "target": 9},\
-        {"source": 3, "target": 10},\
-        {"source": 4, "target": 11},\
-        {"source": 5, "target": 12},\
-        {"source": 6, "target": 13}],\
-        "nodes": [\
-        {"size": 60, "score": 0, "id": "Androsynth", "type": "circle"},\
-        {"size": 10, "score": 0.2, "id": "Chenjesu", "type": "circle"},\
-        {"size": 60, "score": 0.4, "id": "Ilwrath", "type": "circle"},\
-        {"size": 10, "score": 0.6, "id": "Mycon", "type": "circle"},\
-        {"size": 60, "score": 0.8, "id": "Spathi", "type": "circle"},\
-        {"size": 10, "score": 1, "id": "Umgah", "type": "circle"},\
-        {"id": "VUX"},\
-        {"size": 60, "score": 0, "id": "Guardian", "type": "square"},\
-        {"size": 10, "score": 0.2, "id": "Broodhmome", "type": "square"},\
-        {"size": 60, "score": 0.4, "id": "Avenger", "type": "square"},\
-        {"size": 10, "score": 0.6, "id": "Podship", "type": "square"},\
-        {"size": 60, "score": 0.8, "id": "Eluder", "type": "square"},\
-        {"size": 10, "score": 1, "id": "Drone", "type": "square"},\
-        {"id": "Intruder", "type": "square"}],\
-        "directed": false,\
-        "multigraph": false\
-    }';*/
     jsonFile = actor_movies;
 
     var w = $('#mainCanvas').width() - graphSVGOffset;

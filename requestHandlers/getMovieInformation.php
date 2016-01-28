@@ -47,6 +47,44 @@ $commonDirectors = $movieData['commonDirectors'];
 
 $movie_index = recursive_array_search($movieTitle, $movies);
 
-var_dump($movies[$movie_index]);
+unset($movieData['movies']); // don't send information about all the movies
+$movieData['movie_data'] = $movies[$movie_index];
+
+// send common cast to this movie
+$movieData['commonCast'] = $commonCast[$movieTitle];
+
+// send common directors to this movie
+$movieData['commonDirectors'] = $commonDirectors[$movieTitle];
+//var_dump($movieData['commonDirectors']);
+// but the genres are filtered because they are too many => not useful information anymore
+// we will the genres of the movies found in (commonCast or commonDirectors)
+$commonGenres = $commonGenres[$movieTitle];
+
+$finalCommonGenres = array();
+if (is_array($movieData['commonCast'])) {
+    foreach ($movieData['commonCast'] as $movie => $actors) {
+        if ($commonGenres[$movie])
+            $finalCommonGenres[$movie] = $commonGenres[$movie];
+    }
+}
+
+if (is_array($movieData['commonDirectors'])) {
+    foreach ($movieData['commonDirectors'] as $movie => $directors) {
+        if ($commonGenres[$movie])
+            $finalCommonGenres[$movie] = $commonGenres[$movie];
+    }
+}
+
+$movieData['commonGenres'] = $finalCommonGenres;
+//echo "movie info";
+//var_dump($movies[$movie_index]);
+//echo "common cast";
+//var_dump($commonCast[$movieTitle]);
+//echo "common genre";
+//var_dump($commonGenres[$movieTitle]);
+//echo "common directors";
+//var_dump($commonDirectors[$movieTitle]);
+
+echo json_encode($movieData);
 
 ?>

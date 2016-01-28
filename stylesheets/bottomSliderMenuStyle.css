@@ -132,4 +132,11 @@ body.has-active-menu {
 .c-menu--slide-bottom.is-active,
 .c-menu--push-bottom.is-active {
     transform: translateY(0);
+    height: 40%;
+}
+
+/*Added customization*/
+.c-menu--slide-bottom #c-menu-table{
+    table-layout: auto;
+    width: 100%;
 }

@@ -155,8 +155,12 @@ foreach ($scores as $movie1_index => $value) {
             'target' => $movie2_index,
             'common_elements' => $score
         );
+
+
     }
+
 }
+
 
 //// sort the links and retain the X % percent, as specified in the filter slide
 //usort($links, function($a, $b) {

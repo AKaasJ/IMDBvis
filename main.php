@@ -12,11 +12,14 @@
     <script src="/js/d3.slider.js" type="text/javascript"></script>
     <script src="/js/colorLegend.js" type="text/javascript"></script>
     <script src="/js/menu.js" type="text/javascript"></script>
+    <script src="/node_modules/c3/c3.min.js" type="text/javascript"></script>
 
     <link rel="stylesheet" type="text/css" href="stylesheets/d3.slider.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/style.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/colorLegendStyle.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="stylesheets/bottomSliderMenuStyle.css" media="screen" />
+    <link href="node_modules/c3/c3.css" rel="stylesheet" type="text/css">
+
 
     <style>
 
@@ -102,9 +105,26 @@
 
 <nav id="c-menu--slide-bottom" class="c-menu c-menu--slide-bottom">
     <button class="c-menu__close">&larr; Close Menu</button>
-    <ul class="c-menu__items">
-        <li class="c-menu__item"><a href="#" class="c-menu__link">Home</a></li>
-    </ul>
+    <table id="c-menu-table">
+        <tr>
+            <td width="25%">
+                <div id="movie_info">
+                    <h1 id="title"></h1>
+                    <div id="rating"></div>
+                    <div id="Summary"></div>
+                    <div id="Poster"></div>
+                </div>
+            </td>
+            <td width="75%">
+                <div id="chart"></div>
+            </td>
+
+        </tr></table>
+
+<!---->
+<!--    <ul class="c-menu__items">-->
+<!--        <li class="c-menu__item"><a href="#" class="c-menu__link">Home</a></li>-->
+<!--    </ul>-->
 </nav>
 
 </body>

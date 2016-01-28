@@ -8,6 +8,9 @@ handlers:
 - url: /js
   static_dir: js
 
+- url: /node_modules
+  static_dir: node_modules
+
 - url: /stylesheets
   static_dir: stylesheets
 
