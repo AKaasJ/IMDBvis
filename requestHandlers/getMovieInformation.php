@@ -102,7 +102,7 @@ $nav_history = $_SESSION['navigation_history'];
 $title = $movieData['movie_data']['title'];
 
 array_unshift($nav_history, $title);
-$nav_history = array_slice($nav_history, 0, 5);
+$nav_history = array_slice($nav_history, 0, 6);
 
 $_SESSION['navigation_history'] = $nav_history;
 $movieData['navigation_history'] = $nav_history;

@@ -149,7 +149,7 @@ function displayBreadCrumbs(navigation_history){
     d3.select("#bread_crumbs div").remove();
     var container = d3.select("#bread_crumbs").append("div");
 
-    for(var i = navigation_history.length-1; i >= 0; --i) {
+    for(var i = navigation_history.length-1; i >= 1; --i) { // greater than 1 because we don't want to display the current movie
         movie_title = navigation_history[i];
         //console.log(title);
         container.append("button")
@@ -182,7 +182,7 @@ function displayStackedBarChart(data){
 
     // get all the movies
     movies_categories = [];
-    commonActorsData = ['Common Actors'];
+    commonActorsData = ['\u000A \u000A Common Actors'];
     commonGenresData = ['Common Genres'];
     commonDirectorsData = ['Common Directors'];
 
@@ -211,9 +211,6 @@ function displayStackedBarChart(data){
         commonGenresData.push(data.commonGenres == null || data.commonGenres[movie] === undefined ? 0 : data.commonGenres[movie].length);
         commonDirectorsData.push(data.commonDirectors == null  || data.commonDirectors[movie] === undefined ? 0 : data.commonDirectors[movie].length);
     }
-
-
-
 
     var chart = c3.generate({
         bindto: '#chart',
@@ -245,9 +242,26 @@ function displayStackedBarChart(data){
             x: {
                 type: 'category',
                 categories: movies_categories
+            },
+            y :{
+                label: 'number of common elements',
+                position: 'outer-middle'
             }
+        },
+        legend: {
+            position : "right"
+        },
+        zoom: {
+            enabled : true
         }
     });
+
+    d3.select('#chart svg').append('text')
+        .attr('x', d3.select('#chart svg').node().getBoundingClientRect().width / 2)
+        .attr('y', 16)
+        .attr('text-anchor', 'middle')
+        .style('font-size', '1.4em')
+        .text('Elements in common with other movies');
 }
 
 

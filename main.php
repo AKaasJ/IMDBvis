@@ -112,15 +112,15 @@
 
     <table id="c-menu-table">
         <tr>
-            <td width="25%">
+            <td width="20%">
                 <div id="movie_info">
                     <h1 id="title"></h1>
                     <div id="rating"></div>
-                    <div id="summary"></div>
-                    <img id="poster"></img>
+                    <div id="summary">Tootsie roll oat cake lollipop jelly candy pudding. Sweet roll sesame snaps marshmallow lollipop danish muffin cake tart. Marzipan apple pie cupcake candy canes.</div>
+                    <img id="poster">
                 </div>
             </td>
-            <td width="75%">
+            <td width="80%">
                 <div id="chart"></div>
             </td>
 
