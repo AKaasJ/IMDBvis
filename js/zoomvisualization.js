@@ -191,6 +191,14 @@ function displayStackedBarChart(data){
     var chart = c3.generate({
         bindto: '#chart',
         data: {
+            onclick: function(d, i){
+
+                selected_movies = movies_categories[d.x];
+
+                $.get("/requestHandlers/getMovieInformation.php", {"movieTitle" : selected_movies }, function (data){
+                    displayMovieInformation(data);
+                });
+            },
             columns: [
                 commonActorsData,
                 commonGenresData,
