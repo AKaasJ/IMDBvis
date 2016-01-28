@@ -140,3 +140,24 @@ body.has-active-menu {
     table-layout: auto;
     width: 100%;
 }
+
+ /*bread crumbs*/
+.c-menu__bread_crumb {
+    color: #fff;
+    background-color: #3184a1;
+    font-size: 14px;
+    border: none;
+    box-shadow: none;
+    border-radius: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    float: left;
+    margin: 2px;
+    /*width: 200px;*/
+}
+
+.c-menu--slide-bottom #bread_crumbs {
+    margin-bottom: 20px;
+}

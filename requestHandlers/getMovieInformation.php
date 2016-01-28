@@ -94,5 +94,17 @@ $titles = json_decode(file_get_contents($movies_titles_file_name), true);
 $stupid_index = array_search($movieData['movie_data']['title'], $titles);
 $movieData['movie_data']['cover_url'] = $covers[$stupid_index];
 
+// update history - for bread crumbs
+if (! isset($_SESSION['navigation_history'])) {
+    $_SESSION['navigation_history'] = array();
+}
+$nav_history = $_SESSION['navigation_history'];
+$title = $movieData['movie_data']['title'];
+
+array_unshift($nav_history, $title);
+$nav_history = array_slice($nav_history, 0, 5);
+
+$_SESSION['navigation_history'] = $nav_history;
+$movieData['navigation_history'] = $nav_history;
 echo json_encode($movieData);
 ?>

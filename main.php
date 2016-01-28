@@ -104,7 +104,12 @@
 
 
 <nav id="c-menu--slide-bottom" class="c-menu c-menu--slide-bottom">
-    <button class="c-menu__close">&larr; Close Menu</button>
+
+    <div id="bread_crumbs">
+    </div>
+
+    <button class="c-menu__close" style="display: none">Close View</button>
+
     <table id="c-menu-table">
         <tr>
             <td width="25%">

@@ -90,13 +90,10 @@ function addTimerForNodes(){
     var start_time;
     function start() {
         start_time = new Date();
-        console.log("mouse down");
     }
     function end() {
         var now = new Date();
         clicked_time = now-start_time;
-
-        console.log(clicked_time);
     }
 
     $('.c-button').mousedown(start);
@@ -139,8 +136,35 @@ function addEventsToNodes() {
  */
 function displayMovieInformation(data){
     data = JSON.parse(data);
+    displayBreadCrumbs(data.navigation_history);
     displayParticularMovieInformation(data);
     displayStackedBarChart(data);
+}
+
+/**
+ * Adds a button for each element in the array
+ * @param navigation_history - array of strings
+ */
+function displayBreadCrumbs(navigation_history){
+    d3.select("#bread_crumbs div").remove();
+    var container = d3.select("#bread_crumbs").append("div");
+
+    for(var i = navigation_history.length-1; i >= 0; --i) {
+        movie_title = navigation_history[i];
+        //console.log(title);
+        container.append("button")
+            .on("mousedown", function (d, i) {
+                console.log(this);
+                $.get("/requestHandlers/getMovieInformation.php", {"movieTitle": this.id}, function (data) {
+                    displayMovieInformation(data);
+                });
+            })
+            .attr("class", "c-menu__bread_crumb")
+            .attr("id", movie_title)
+            .text("\u2190 " + movie_title);
+
+
+    }
 }
 
 function displayParticularMovieInformation(data){
