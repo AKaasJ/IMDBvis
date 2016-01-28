@@ -116,7 +116,7 @@
                 <div id="movie_info">
                     <h1 id="title"></h1>
                     <div id="rating"></div>
-                    <div id="summary">Tootsie roll oat cake lollipop jelly candy pudding. Sweet roll sesame snaps marshmallow lollipop danish muffin cake tart. Marzipan apple pie cupcake candy canes.</div>
+                    <div id="summary">A movie about tootsie roll oat cake lollipop jelly candy pudding. Sweet roll sesame snaps marshmallow lollipop danish muffin cake tart. Marzipan apple pie cupcake candy canes.</div>
                     <img id="poster">
                 </div>
             </td>

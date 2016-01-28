@@ -130,140 +130,6 @@ function addEventsToNodes() {
 
 }
 
-/**
- * Shows a popup with information about the movie and its neighbours
- * @param data
- */
-function displayMovieInformation(data){
-    data = JSON.parse(data);
-    displayBreadCrumbs(data.navigation_history);
-    displayParticularMovieInformation(data);
-    displayStackedBarChart(data);
-}
-
-/**
- * Adds a button for each element in the array
- * @param navigation_history - array of strings
- */
-function displayBreadCrumbs(navigation_history){
-    d3.select("#bread_crumbs div").remove();
-    var container = d3.select("#bread_crumbs").append("div");
-
-    for(var i = navigation_history.length-1; i >= 1; --i) { // greater than 1 because we don't want to display the current movie
-        movie_title = navigation_history[i];
-        //console.log(title);
-        container.append("button")
-            .on("mousedown", function (d, i) {
-                console.log(this);
-                $.get("/requestHandlers/getMovieInformation.php", {"movieTitle": this.id}, function (data) {
-                    displayMovieInformation(data);
-                });
-            })
-            .attr("class", "c-menu__bread_crumb")
-            .attr("id", movie_title)
-            .text("\u2190 " + movie_title);
-
-
-    }
-}
-
-function displayParticularMovieInformation(data){
-    // set the title
-    d3.select("#c-menu-table #movie_info #title").text(data.movie_data.title + " (" + (data.movie_data.production_year) + ")");
-
-    // set the rating
-    d3.select("#c-menu-table #movie_info #rating").text("Rating: " + (data.movie_data.rating));
-
-    // set the poster
-    d3.select("#c-menu-table #movie_info #poster").attr("src", data.movie_data.cover_url);
-}
-
-function displayStackedBarChart(data){
-
-    // get all the movies
-    movies_categories = [];
-    commonActorsData = ['\u000A \u000A Common Actors'];
-    commonGenresData = ['Common Genres'];
-    commonDirectorsData = ['Common Directors'];
-
-    //            commonActorsData.push(data.commonCast[movie].length);
-
-    for (movie in data.commonCast){
-        if ($.inArray(movie, movies_categories) == -1) //avoid duplicates
-            movies_categories.push(movie);
-    }
-    for (movie in data.commonGenres){
-        if ($.inArray(movie, movies_categories) == -1) { //avoid duplicates
-            movies_categories.push(movie);
-        }
-    }
-    for (movie in data.commonDirectors){
-        if ($.inArray(movie, movies_categories) == -1) //avoid duplicates
-            movies_categories.push(movie);
-    }
-
-    // populate bar chart data
-    var i = 0;
-    for (i=0; i < movies_categories.length; ++i){
-        movie = movies_categories[i];
-
-        commonActorsData.push(data.commonCast == null || data.commonCast[movie] === undefined ? 0 : data.commonCast[movie].length);
-        commonGenresData.push(data.commonGenres == null || data.commonGenres[movie] === undefined ? 0 : data.commonGenres[movie].length);
-        commonDirectorsData.push(data.commonDirectors == null  || data.commonDirectors[movie] === undefined ? 0 : data.commonDirectors[movie].length);
-    }
-
-    var chart = c3.generate({
-        bindto: '#chart',
-        data: {
-            onclick: function(d, i){
-
-                selected_movies = movies_categories[d.x];
-
-                $.get("/requestHandlers/getMovieInformation.php", {"movieTitle" : selected_movies }, function (data){
-                    displayMovieInformation(data);
-                });
-            },
-            columns: [
-                commonActorsData,
-                commonGenresData,
-                commonDirectorsData
-            ],
-            type: 'bar',
-            groups: [
-                [commonActorsData[0], commonGenresData[0], commonDirectorsData[0]]
-            ]
-        },
-        grid: {
-            y: {
-                lines: [{value:0}]
-            }
-        },
-        axis: {
-            x: {
-                type: 'category',
-                categories: movies_categories
-            },
-            y :{
-                label: 'number of common elements',
-                position: 'outer-middle'
-            }
-        },
-        legend: {
-            position : "right"
-        },
-        zoom: {
-            enabled : true
-        }
-    });
-
-    d3.select('#chart svg').append('text')
-        .attr('x', d3.select('#chart svg').node().getBoundingClientRect().width / 2)
-        .attr('y', 16)
-        .attr('text-anchor', 'middle')
-        .style('font-size', '1.4em')
-        .text('Elements in common with other movies');
-}
-
 
 /**
  * Displays the force graph of movies
@@ -274,6 +140,13 @@ function displayGraph(actor_movies){
     // delete current canvas
     d3.select("#mainCanvas svg").remove();
     jsonFile = actor_movies;
+
+
+    var zoom;
+    var g;
+    var graph;
+    var svg;
+
 
     var w = $('#mainCanvas').width() - graphSVGOffset;
     var h = window.innerHeight;
@@ -474,6 +347,20 @@ function displayGraph(actor_movies){
                 if (highlight_node === null) exit_highlight();
             });
 
+        ////////////////
+        // class methods
+        ////////////////
+        function recenterNode(d){
+          //  if (d3.event)
+          //      d3.event.stopPropagation();
+
+            var dcx = (window.innerWidth/2-d.x*zoom.scale()) - 200;
+            var dcy = (window.innerHeight/2-d.y*zoom.scale()) - 200;
+            //dcy -= 40 / 100 * window.innerHeight;
+            zoom.translate([dcx,dcy]);
+            g.attr("transform", "translate("+ dcx + "," + dcy  + ")scale(" + zoom.scale() + ")");
+        }
+
         function exit_highlight()
         {
             highlight_node = null;
@@ -667,6 +554,156 @@ function displayGraph(actor_movies){
     }
 
 
+
+    /**
+     * Shows a popup with information about the movie and its neighbours
+     * @param data
+     */
+    function displayMovieInformation(data){
+        data = JSON.parse(data);
+        displayBreadCrumbs(data.navigation_history);
+        displayParticularMovieInformation(data);
+        displayStackedBarChart(data);
+    }
+
+    /**
+     * Adds a button for each element in the array
+     * @param navigation_history - array of strings
+     */
+    function displayBreadCrumbs(navigation_history){
+        d3.select("#bread_crumbs div").remove();
+        var container = d3.select("#bread_crumbs").append("div");
+
+        for(var i = navigation_history.length-1; i >= 1; --i) { // greater than 1 because we don't want to display the current movie
+            movie_title = navigation_history[i];
+            //console.log(title);
+            container.append("button")
+                .on("mousedown", function (d, i) {
+                    console.log(this);
+                    $.get("/requestHandlers/getMovieInformation.php", {"movieTitle": this.id}, function (data) {
+                        displayMovieInformation(data);
+                    });
+                })
+                .attr("class", "c-menu__bread_crumb")
+                .attr("id", movie_title)
+                .text("\u2190 " + movie_title);
+
+
+        }
+    }
+
+    function displayParticularMovieInformation(data){
+        // set the title
+        d3.select("#c-menu-table #movie_info #title").text(data.movie_data.title + " (" + (data.movie_data.production_year) + ")");
+
+        // set the rating
+        d3.select("#c-menu-table #movie_info #rating").text("Rating: " + (data.movie_data.rating));
+
+        // set the poster
+        d3.select("#c-menu-table #movie_info #poster").attr("src", data.movie_data.cover_url);
+    }
+
+    function displayStackedBarChart(data){
+
+        // get all the movies
+        movies_categories = [];
+        commonActorsData = ['\u000A \u000A Common Actors'];
+        commonGenresData = ['Common Genres'];
+        commonDirectorsData = ['Common Directors'];
+
+        //            commonActorsData.push(data.commonCast[movie].length);
+
+        for (movie in data.commonCast){
+            if ($.inArray(movie, movies_categories) == -1) //avoid duplicates
+                movies_categories.push(movie);
+        }
+        for (movie in data.commonGenres){
+            if ($.inArray(movie, movies_categories) == -1) { //avoid duplicates
+                movies_categories.push(movie);
+            }
+        }
+        for (movie in data.commonDirectors){
+            if ($.inArray(movie, movies_categories) == -1) //avoid duplicates
+                movies_categories.push(movie);
+        }
+
+        // populate bar chart data
+        var i = 0;
+        for (i=0; i < movies_categories.length; ++i){
+            movie = movies_categories[i];
+
+            commonActorsData.push(data.commonCast == null || data.commonCast[movie] === undefined ? 0 : data.commonCast[movie].length);
+            commonGenresData.push(data.commonGenres == null || data.commonGenres[movie] === undefined ? 0 : data.commonGenres[movie].length);
+            commonDirectorsData.push(data.commonDirectors == null  || data.commonDirectors[movie] === undefined ? 0 : data.commonDirectors[movie].length);
+        }
+
+        var chart = c3.generate({
+            bindto: '#chart',
+            data: {
+                onclick: function(d, i){
+
+                    selected_movies = movies_categories[d.x];
+
+                    $.get("/requestHandlers/getMovieInformation.php", {"movieTitle" : selected_movies }, function (data){
+                        displayMovieInformation(data);
+                        console.log("lalalala");
+                        //recenterNode(data);
+                        //set_highlight(data);
+                        //d3.selectAll('.c-button').each(function (d){
+                        //    if (d.id == selected_movies) {
+                        //        //recenterNode(d);
+                        //        console.log(d);
+                        //    }
+                        //});
+
+                         graph.nodes.forEach(function(d){
+                         if (d.id == selected_movies) {
+                             recenterNode(d);
+                             set_highlight(d);
+                         }
+                         })
+                    });
+                },
+                columns: [
+                    commonActorsData,
+                    commonGenresData,
+                    commonDirectorsData
+                ],
+                type: 'bar',
+                groups: [
+                    [commonActorsData[0], commonGenresData[0], commonDirectorsData[0]]
+                ]
+            },
+            grid: {
+                y: {
+                    lines: [{value:0}]
+                }
+            },
+            axis: {
+                x: {
+                    type: 'category',
+                    categories: movies_categories
+                },
+                y :{
+                    label: 'number of common elements',
+                    position: 'outer-middle'
+                }
+            },
+            legend: {
+                position : "right"
+            },
+            zoom: {
+                enabled : true
+            }
+        });
+
+        d3.select('#chart svg').append('text')
+            .attr('x', d3.select('#chart svg').node().getBoundingClientRect().width / 2)
+            .attr('y', 16)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '1.4em')
+            .text('Elements in common with other movies');
+    }
 
 
 
