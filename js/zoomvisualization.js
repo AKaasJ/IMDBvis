@@ -149,6 +149,9 @@ function displayParticularMovieInformation(data){
 
     // set the rating
     d3.select("#c-menu-table #movie_info #rating").text("Rating: " + (data.movie_data.rating));
+
+    // set the poster
+    d3.select("#c-menu-table #movie_info #poster").attr("src", data.movie_data.cover_url);
 }
 
 function displayStackedBarChart(data){

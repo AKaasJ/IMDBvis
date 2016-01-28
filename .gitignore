@@ -1,2 +1,4 @@
 .idea/*
 /data
+!/data/movies_cover_urls.json
+!/data/movies_titles.json

@@ -111,8 +111,8 @@
                 <div id="movie_info">
                     <h1 id="title"></h1>
                     <div id="rating"></div>
-                    <div id="Summary"></div>
-                    <div id="Poster"></div>
+                    <div id="summary"></div>
+                    <img id="poster"></img>
                 </div>
             </td>
             <td width="75%">
