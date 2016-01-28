@@ -86,13 +86,15 @@ $movieData['commonGenres'] = $finalCommonGenres;
 //var_dump($commonDirectors[$movieTitle]);
 
 
-// hack to get the cover url TODO: this is EXTREMELY HACKY!
-$covers_file_name=$_SERVER['DOCUMENT_ROOT']."/data/movies_cover_urls.json";
-$movies_titles_file_name=$_SERVER['DOCUMENT_ROOT']."/data/movies_titles.json";
-$covers = json_decode(file_get_contents($covers_file_name), true);
-$titles = json_decode(file_get_contents($movies_titles_file_name), true);
-$stupid_index = array_search($movieData['movie_data']['title'], $titles);
-$movieData['movie_data']['cover_url'] = $covers[$stupid_index];
+//// hack to get the cover url TODO: this is EXTREMELY HACKY!
+//$covers_file_name=$_SERVER['DOCUMENT_ROOT']."/data/movies_cover_urls.json";
+//$movies_titles_file_name=$_SERVER['DOCUMENT_ROOT']."/data/movies_titles.json";
+//$covers = json_decode(file_get_contents($covers_file_name), true);
+//$titles = json_decode(file_get_contents($movies_titles_file_name), true);
+//$stupid_index = array_search($movieData['movie_data']['title'], $titles);
+//$movieData['movie_data']['cover_url'] = $covers[$stupid_index];
+
+$movieData['movie_data']['cover_url'] = "/resources/".$movieData['movie_data']['title'].'.jpg';
 
 // update history - for bread crumbs
 if (! isset($_SESSION['navigation_history'])) {
