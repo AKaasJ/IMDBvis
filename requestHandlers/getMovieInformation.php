@@ -94,7 +94,7 @@ $movieData['commonGenres'] = $finalCommonGenres;
 //$stupid_index = array_search($movieData['movie_data']['title'], $titles);
 //$movieData['movie_data']['cover_url'] = $covers[$stupid_index];
 
-$movieData['movie_data']['cover_url'] = "/resources/".$movieData['movie_data']['title'].'.jpg';
+$movieData['movie_data']['cover_url'] = "/resources/".str_replace(' ', '_', $movieData['movie_data']['title']).'.jpg';
 
 // update history - for bread crumbs
 if (! isset($_SESSION['navigation_history'])) {
