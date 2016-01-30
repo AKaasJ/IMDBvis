@@ -16,7 +16,7 @@ var score_filter_slider;
  * Min and max values for each slider.
  */
 var common_cast_slider_min = 0;
-var common_cast_slider_max = 40;
+var common_cast_slider_max = 10;
 
 var common_genre_slider_min = 0;
 var common_genre_slider_max = 4;
@@ -38,6 +38,9 @@ function initializeApplication(){
 
     // first selected slider is common cast;
     common_cast_slider.isSelected(true);
+
+    // start!!!
+    sayHello();
 }
 
 /**
@@ -62,7 +65,7 @@ function displayLegend(){
 
     // 2. line thickness legend
     link_thickness = d3.scale.pow()
-        .domain([3, 40])
+        .domain([3, common_cast_slider_max])
         .range(["#888", "#888"]);
     updateLineThicknessLegend(link_thickness);
 
