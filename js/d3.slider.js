@@ -283,6 +283,11 @@ d3.slider = function module() {
 
   slider.isSelected = function (_){
     if (!arguments.length) return isSelected;
+
+    var bar = svg.select(".d3slider-rect-value");
+
+    bar.classed("isSelected", _);
+
     isSelected = _;
     return slider;
   }

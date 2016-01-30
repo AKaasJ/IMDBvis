@@ -5,14 +5,19 @@
   width: calc(100% - 10px);
 }
 
+
 .d3slider-rect-range {
   fill: #777;
   stroke: none;
 }
 
 .d3slider-rect-value {
-  fill: #006EE3;
+  fill: #777;
   stroke: none;
+}
+
+.isSelected {
+  fill: #006EE3;
 }
 
 .d3slider-axis {
