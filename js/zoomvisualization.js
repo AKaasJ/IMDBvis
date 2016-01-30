@@ -94,7 +94,7 @@ function sayHello() {
 
         displayMainCanvas(data);
 
-        addEventsToNodes(); // for the bottom slide-menu
+       // addEventsToNodes(); // for the bottom slide-menu
 
         addTimerForNodes();
     });
@@ -149,8 +149,12 @@ function addEventsToNodes() {
         slideBottomBtn[i].addEventListener('click', function (e) {
             e.preventDefault;
 
-            if (clicked_time < 300)
+            if (clicked_time < 300) {
+                set_focus(slideBottomBtn[i]);
+                set_highlight(slideBottomBtn[i]);
                 slideBottom.open();
+
+            }
         });
     }
 
@@ -162,6 +166,15 @@ function addEventsToNodes() {
  * @param actore_movies
  */
 function displayGraph(actor_movies) {
+
+    var slideBottom = new Menu({
+        wrapper: '#o-wrapper',
+        type: 'slide-bottom',
+        menuOpenerClass: '.c-button',
+        maskId: '#c-mask'
+    });
+
+   // var slideBottomBtn = document.querySelectorAll('#c-button--slide-bottom');
 
     // delete current canvas
     d3.select("#mainCanvas svg").remove();
@@ -369,9 +382,21 @@ function displayGraph(actor_movies) {
              });*/
 
         }).on("mouseout", function (d) {
-        exit_highlight();
+            if (slideBottom.isOpened() == false) {
+                exit_highlight();
+            }
 
-    });
+    })
+        .on('click', function (d) {
+            //e.preventDefault;
+
+            if (clicked_time < 300) {
+                set_focus(d);
+                set_highlight(d);
+                slideBottom.open();
+            }
+
+        });
 
     d3.select(window).on("mouseup",
         function () {
@@ -442,21 +467,21 @@ function displayGraph(actor_movies) {
         if (highlight_color != "white") {
             circle.style(towhite, function (o) {
 
-                if (isConnected(d, o)) {
-                    console.log("inCircle");
-                    console.log(o);
-                }
+                //if (isConnected(d, o)) {
+                //    console.log("inCircle");
+                //    console.log(o);
+                //}
                 return isConnected(d, o) ? highlight_color : "white";
             });
             text.style("font-weight", function (o) {
                 return isConnected(d, o) ? "bold" : "normal";
             });
             link.style("stroke", function (o) {
-
-                if (o.source.index == d.index || o.target.index == d.index) {
-                    console.log("inStroke");
-                    console.log(o);
-                }
+                //
+                //if (o.source.index == d.index || o.target.index == d.index) {
+                //    console.log("inStroke");
+                //    console.log(o);
+                //}
                 return o.source.index == d.index || o.target.index == d.index ? highlight_color : ((isNumber(o.score) && o.score >= 0) ? color(o.score) : default_link_color);
 
             });
@@ -780,6 +805,7 @@ function displayGraph(actor_movies) {
                             if (d.id == selected_movies) {
                                 recenterNode(d);
                                 set_highlight(d);
+                                set_focus(d);
                             }
                         })
                     });
