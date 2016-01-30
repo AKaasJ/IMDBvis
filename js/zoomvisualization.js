@@ -853,7 +853,9 @@ function displayGraph(actor_movies) {
                 linkedByIndex[d.source + "," + d.target] = true;
             });
         }else {
-
+            graph.links.forEach(function (d) {
+                linkedByIndex[d.source.index + "," + d.target.index] = true;
+            });
         }
 
         restart();
