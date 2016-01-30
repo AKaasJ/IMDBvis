@@ -35,6 +35,9 @@ function initializeApplication(){
     $('#loading').hide();
 
     displaySlidersCanvas();
+
+    // first selected slider is common cast;
+    common_cast_slider.isSelected(true);
 }
 
 /**
@@ -129,8 +132,13 @@ function initializeSliders() {
     // add div for common cast slider
     common_cast_slider_container.append("div").attr("id", "common_cast_slider");
 
-    common_cast_slider = d3.slider().min(common_cast_slider_min).max(common_cast_slider_max).ticks(2).showRange(true).value(3);
+    common_cast_slider = d3.slider().min(common_cast_slider_min).max(common_cast_slider_max).ticks(2).showRange(true).value(3)
+        .callback(function (slider){
+            if (slider.isSelected())
+                theGraph.threshold(slider.value());
+        });
     d3.select("#common_cast_slider").call(common_cast_slider);
+
 
 
     // 2. initialize common genre slider
@@ -149,7 +157,11 @@ function initializeSliders() {
 
     // add div for common genre slider
     common_genre_slider_container.append("div").attr("id", "common_genre_slider");
-    common_genre_slider = d3.slider().min(common_genre_slider_min).max(common_genre_slider_max).ticks(5).showRange(true).value(3);
+    common_genre_slider = d3.slider().min(common_genre_slider_min).max(common_genre_slider_max).ticks(5).showRange(true).value(3)
+        .callback(function (slider){
+            if (slider.isSelected())
+                theGraph.threshold(slider.value());
+        });;
     d3.select("#common_genre_slider").call(common_genre_slider);
 
 
@@ -169,7 +181,11 @@ function initializeSliders() {
 
     // add div for common director slider
     common_director_slider_container.append("div").attr("id", "common_director_slider");
-    common_director_slider = d3.slider().min(common_director_slider_min).max(common_director_slider_max).ticks(2).showRange(true).value(1);
+    common_director_slider = d3.slider().min(common_director_slider_min).max(common_director_slider_max).ticks(2).showRange(true).value(1)
+        .callback(function (slider){
+            if (slider.isSelected())
+                theGraph.threshold(slider.value());
+        });;
     d3.select("#common_director_slider").call(common_director_slider);
     //
     //// 4. initialize score filter slider

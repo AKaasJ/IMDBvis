@@ -73,7 +73,10 @@ if (strcmp($selected_radio, "common_cast_slider") == 0) {
             // compute score for the <movie1, movie2> pair
             //$sub_score = count($actors) * $common_cast_slider_value;
             //$sub_score = count($actors) / $max_number_common_actors;
-            $sub_score = (count($actors) >= $common_cast_slider_value) ? count($actors) : 0;
+
+            // UPDATE: this logic has moved to UI logic - we now send every link
+            //$sub_score = (count($actors) >= $common_cast_slider_value) ? count($actors) : 0;
+            $sub_score = count($actors);
 
             if ($sub_score == 0) continue; // just for optimization
 
@@ -99,7 +102,10 @@ if (strcmp($selected_radio, "common_genre_slider") == 0) {
             // compute score for the <movie1, movie2> pair
             //$sub_score = count($genres) * $common_genre_slider_value;
             //$sub_score = count($genres) / $max_number_common_genres;
-            $sub_score = (count($genres) >= $common_genre_slider_value) ? count($genres) : 0;
+
+            // UPDATE: this logic has moved to UI logic - we now send every link
+            //$sub_score = (count($genres) >= $common_genre_slider_value) ? count($genres) : 0;
+            $sub_score = count($genres);
 
             if ($sub_score == 0) continue;
 
@@ -125,7 +131,10 @@ if (strcmp($selected_radio, "common_director_slider") == 0) {
             // compute score for the <movie1, movie2> pair
             //$sub_score = count($genres) * $common_genre_slider_value;
             //$sub_score = count($genres) / $max_number_common_genres;
-            $sub_score = (count($directors) >= $common_director_slider_value) ? count($directors) : 0;
+
+            // UPDATE: this logic has moved to UI logic - we now send every link
+            //$sub_score = (count($directors) >= $common_director_slider_value) ? count($directors) : 0;
+            $sub_score = count($directors);
 
             if ($sub_score == 0) continue;
 

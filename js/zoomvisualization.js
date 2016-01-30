@@ -29,6 +29,7 @@ function showLoadingState(isLoading) {
 
 var selected_slider_value = 0;
 var max_selected_slider_value = 0; // max of one of the three sliders in the control panel
+var min_selected_slider_value = 0;
 
 
 function sayHello(){
@@ -43,21 +44,34 @@ function sayHello(){
     var requestString = "getactor.php?";
     // get values of the radio buttons
     selected_radio=$('input[name="sliders_radio_control_panel"]:checked').val();
+
+    // set all sliders to false
+    common_cast_slider.isSelected(false);
+    common_genre_slider.isSelected(false);
+    common_director_slider.isSelected(false);
+
+
     switch (selected_radio){
         case "common_cast_slider":
             requestString = requestString.concat("common_cast_slider_value=", common_cast_slider_value);
             selected_slider_value = common_cast_slider_value;
             max_selected_slider_value = common_cast_slider_max;
+            min_selected_slider_value = common_cast_slider_min;
+            common_cast_slider.isSelected(true);
             break;
         case "common_genre_slider":
             requestString = requestString.concat("&common_genre_slider_value=", common_genre_slider_value);
             selected_slider_value = common_genre_slider_value;
             max_selected_slider_value = common_genre_slider_max;
+            min_selected_slider_value = common_genre_slider_min;
+            common_genre_slider.isSelected(true);
             break;
         case "common_director_slider":
             requestString = requestString.concat("&common_director_slider_value=", common_director_slider_value);
             selected_slider_value = common_director_slider_value;
             max_selected_slider_value = common_director_slider_max;
+            min_selected_slider_value = common_director_slider_min;
+            common_director_slider.isSelected(true);
             break;
         default:
             alert("Please select a radio button");
@@ -101,9 +115,19 @@ function addTimerForNodes(){
 
 }
 
+function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds){
+            break;
+        }
+    }
+}
 
+var theGraph;
 function displayMainCanvas(actor_movies) {
-    displayGraph(actor_movies);
+    theGraph = new displayGraph(actor_movies);
+    theGraph.threshold(selected_slider_value);
 }
 
 function addEventsToNodes() {
@@ -165,7 +189,7 @@ function displayGraph(actor_movies){
     // color scale is defined in the appinit.js
     // link_thickness is defined in the appinit.js
     link_thickness = d3.scale.pow()
-        .domain([selected_slider_value, max_selected_slider_value])
+        .domain([min_selected_slider_value, max_selected_slider_value])
         .range([.5, 5]);
     updateLineThicknessLegend(link_thickness);
     var size = d3.scale.linear()
@@ -207,6 +231,7 @@ function displayGraph(actor_movies){
     svg.style("cursor","move");
 
     graph = JSON.parse(jsonFile);
+    graphRec = JSON.parse(JSON.stringify(graph));
 
         var linkedByIndex = {};
         graph.links.forEach(function(d) {
@@ -245,9 +270,9 @@ function displayGraph(actor_movies){
         var node = g.selectAll(".node")
             .data(graph.nodes)
             .enter().append("g")
-            .attr("class", "node")
+            .attr("class", "node c-button")
             .attr("id", "c-button--slide-bottom")
-            .attr("class", "c-button")
+            //.attr("class", "c-button")
             .call(force.drag)
 
 
@@ -416,32 +441,7 @@ function displayGraph(actor_movies){
 
 
         zoom.on("zoom", function() {
-
-            var stroke = nominal_stroke;
-            if (nominal_stroke*zoom.scale()>max_stroke) stroke = max_stroke/zoom.scale();
-            link.style("stroke-width", function (d){
-                return link_thickness(d.common_elements) * zoom.scale();
-            });
-
-            circle.style("stroke-width",stroke);
-            //circle.style("stroke-width",function(d){
-            //    return node_size_scale(d.rating);
-            //});
-
-            var base_radius = nominal_base_node_size;
-            if (nominal_base_node_size*zoom.scale()>max_base_node_size) base_radius = max_base_node_size/zoom.scale();
-            circle.attr("d", d3.svg.symbol()
-                .size(function(d) { return Math.PI*Math.pow(size(d.size)*base_radius/nominal_base_node_size||base_radius,2); })
-                .type(function(d) { return d.type; }))
-
-            //circle.attr("r", function(d) { return (size(d.size)*base_radius/nominal_base_node_size||base_radius); })
-            if (!text_center) text.attr("dx", function(d) { return (size(d.size)*base_radius/nominal_base_node_size||base_radius); });
-
-            var text_size = nominal_text_size;
-            if (nominal_text_size*zoom.scale()>max_text_size) text_size = max_text_size/zoom.scale();
-            text.style("font-size",text_size + "px");
-
-            g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+            doZoom(true);
         });
 
         svg.call(zoom);
@@ -463,6 +463,53 @@ function displayGraph(actor_movies){
             node.attr("cx", function(d) { return d.x; })
                 .attr("cy", function(d) { return d.y; });
         });
+
+    // tentative repaint ...
+    function repaint() {
+        doZoom(false);
+    }
+
+    function doZoom(doTranslate) {
+
+        var stroke = nominal_stroke;
+        if (nominal_stroke * zoom.scale() > max_stroke) stroke = max_stroke / zoom.scale();
+        link.style("stroke-width", function (d) {
+            return link_thickness(d.common_elements) * zoom.scale();
+        });
+
+        circle.style("stroke-width", stroke);
+        //circle.style("stroke-width",function(d){
+        //    return node_size_scale(d.rating);
+        //});
+
+        var base_radius = nominal_base_node_size;
+        if (nominal_base_node_size * zoom.scale() > max_base_node_size) base_radius = max_base_node_size / zoom.scale();
+        circle.attr("d", d3.svg.symbol()
+            .size(function (d) {
+                return Math.PI * Math.pow(size(d.size) * base_radius / nominal_base_node_size || base_radius, 2);
+            })
+            .type(function (d) {
+                return d.type;
+            }))
+
+        //circle.attr("r", function(d) { return (size(d.size)*base_radius/nominal_base_node_size||base_radius); })
+        if (!text_center) text.attr("dx", function (d) {
+            return (size(d.size) * base_radius / nominal_base_node_size || base_radius);
+        });
+
+        var text_size = nominal_text_size;
+        if (nominal_text_size * zoom.scale() > max_text_size) text_size = max_text_size / zoom.scale();
+        text.style("font-size", text_size + "px");
+
+        if (doTranslate == true) {
+            g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+        }
+        else{
+            g.attr("transform", "translate(" + 10 + ")");
+        }
+
+
+    }
 
         function resize() {
             var width = window.innerWidth, height = window.innerHeight;
@@ -703,6 +750,32 @@ function displayGraph(actor_movies){
             .attr('text-anchor', 'middle')
             .style('font-size', '1.4em')
             .text('Elements in common with other movies');
+    }
+
+    this.threshold = function (thresh)
+    {
+        threshold(thresh);
+    }
+
+    function threshold(thresh){
+        graph.links.splice(0, graph.links.length);
+
+        for (var i=0; i < graphRec.links.length; i++){
+            if (graphRec.links[i].common_elements >= thresh){
+                graph.links.push(graphRec.links[i]);
+            }
+        }
+        restart();
+    }
+
+    function restart(){
+        link = link.data(graph.links);
+        link.exit().remove();
+        link.enter().insert("line", ".node").attr("class", "link");
+        node = node.data(graph.nodes);
+        node.enter().insert("circle", ".cursor").attr("class", "node").attr("r", 5).call(force.drag);
+
+        force.start();
     }
 
 

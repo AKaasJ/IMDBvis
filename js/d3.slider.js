@@ -8,7 +8,7 @@ d3.slider = function module() {
   margin = {top: 25, right: 25, bottom: 15, left: 25}, 
   ticks = 0, tickValues, scale, tickFormat, dragger, width, 
   range = false,
-  callbackFn, stepValues, focus;
+  callbackFn, stepValues, focus, isSelected = false;
 
   function slider(selection) {
     selection.each(function() {
@@ -278,6 +278,12 @@ d3.slider = function module() {
 
   slider.destroy = function() {
     div.selectAll('svg').remove();
+    return slider;
+  }
+
+  slider.isSelected = function (_){
+    if (!arguments.length) return isSelected;
+    isSelected = _;
     return slider;
   }
 
